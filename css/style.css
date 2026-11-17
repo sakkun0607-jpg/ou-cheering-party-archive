@@ -9,7 +9,7 @@ body {
     font-family: sans-serif;
 }
 
-/* ヘッダー */
+
 
 header {
     position: absolute;
@@ -27,7 +27,7 @@ header {
     line-height: 1.5;
 }
 
-/* ハンバーガーメニュー */
+
 
 .menu-button {
     position: fixed;
@@ -40,7 +40,7 @@ header {
     color: white;
     cursor: pointer;
 
-    /* 背景色に応じて自動的に反転 */
+    
     mix-blend-mode: difference;
 }
 
@@ -80,11 +80,9 @@ header {
     opacity: 0.6;
 }
 
-/* メインビジュアル */
 
-/* =========================
-   HOME HERO
-   ========================= */
+
+
 
 .hero {
     position: relative;
@@ -97,9 +95,7 @@ header {
 }
 
 
-/* =========================
-   背景写真
-   ========================= */
+
 
 .hero-background {
     position: absolute;
@@ -111,14 +107,14 @@ header {
             rgba(0, 0, 0, 0.58),
             rgba(0, 0, 0, 0.58)
         ),
-        url("../images/ouendan.jpg");
+        url("../images/hata3.jpg");
 
     background-size: cover;
-    background-position: center;
+    background-position: center 55%;
 
     opacity: 0.55;
 
-    transform: scale(1.03);
+    transform: scale(1.3);
 
     transition:
         opacity 1.2s ease,
@@ -126,9 +122,7 @@ header {
 }
 
 
-/* =========================
-   最初のタイトル
-   ========================= */
+
 
 .hero-intro {
     position: absolute;
@@ -174,9 +168,7 @@ header {
 }
 
 
-/* =========================
-   燦革
-   ========================= */
+
 
 .san-kaku {
     position: absolute;
@@ -202,11 +194,18 @@ header {
 }
 
 
-/* スクロール後 */
+
 
 .hero.scrolled .hero-background {
     opacity: 0.18;
-    transform: scale(1);
+    transform: scale(1.3);
+}
+
+@media (min-width: 761px) {
+    .hero-background,
+    .hero.scrolled .hero-background {
+        transform: scale(1.55);
+    }
 }
 
 .hero.scrolled .hero-intro {
@@ -223,9 +222,7 @@ header {
 }
 
 
-/* =========================
-   盾
-   ========================= */
+
 
 .shield {
     position: relative;
@@ -266,9 +263,7 @@ header {
 }
 
 
-/* =========================
-   盾の文字
-   ========================= */
+
 
 .shield-small {
     font-size: 12px;
@@ -300,9 +295,7 @@ header {
 }
 
 
-/* =========================
-   スマートフォン
-   ========================= */
+
 
 @media (max-width: 700px) {
 
@@ -333,7 +326,7 @@ header {
     }
 }
 
-/* ABOUTの三部サブメニュー */
+
 .menu .menu-group {
     width: 100%;
     margin-bottom: 1.25rem;
@@ -377,7 +370,7 @@ header {
     font-size: 16px;
 }
 
-/* 各セクション */
+
 
 .about,
 .parts,
@@ -399,7 +392,7 @@ section h2 {
     margin-bottom: 40px;
 }
 
-/* ABOUT */
+
 
 .about {
     background-color: white;
@@ -411,7 +404,7 @@ section h2 {
     font-size: 17px;
 }
 
-/* PARTS */
+
 
 .parts {
     background-color: #f2f2f2;
@@ -447,7 +440,7 @@ section h2 {
     font-size: 16px;
 }
 
-/* PERFORMANCE */
+
 
 .performance {
     background-color: black;
@@ -460,7 +453,7 @@ section h2 {
     font-size: 17px;
 }
 
-/* HISTORY */
+
 
 .history {
     background-color: white;
@@ -471,7 +464,7 @@ section h2 {
     font-size: 17px;
 }
 
-/* フッター */
+
 
 footer {
     padding: 50px 10%;
@@ -484,7 +477,7 @@ footer p {
     margin: 5px 0;
 }
 
-/* スマホ */
+
 
 @media (max-width: 700px) {
 
@@ -511,7 +504,7 @@ footer p {
         width: 80%;
     }
 }
-/* 明朝体にする部分 */
+
 h1,
 h2,
 h3,
@@ -596,7 +589,7 @@ h3,
     padding-left: 15%;
 }
 
-/* 高校生・新入生向けページ */
+
 .welcome-page {
     min-height: 100vh;
     background: #f4f2ed;
@@ -604,6 +597,11 @@ h3,
 }
 
 .welcome-hero {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: auto;
+    width: auto;
     padding: clamp(8rem, 17vw, 13rem) var(--page-gutter, 10%) clamp(4rem, 8vw, 6rem);
     background: #20251f;
     color: #fff;
@@ -634,7 +632,7 @@ h3,
 
 .welcome-intro {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: clamp(2rem, 8vw, 7rem);
     padding: clamp(4rem, 9vw, 7rem) var(--page-gutter, 10%);
     background: #fff;
@@ -861,7 +859,7 @@ h3,
         flex-direction: column;
     }
 }
-/* 各部紹介ページを少し右にずらす */
+
 
 .leader-page,
 .leader-greeting,
@@ -886,9 +884,7 @@ h3,
 .member-year {
     padding-left: 12%;
 }
-/* =========================
-   MEMBER
-   ========================= */
+
 
 .member-page {
     padding: 120px 10% 80px 12%;
@@ -907,7 +903,7 @@ h3,
 }
 
 
-/* 学年ごとのセクション */
+
 
 .member-year {
     padding: 80px 10% 100px 12%;
@@ -924,14 +920,14 @@ h3,
 }
 
 
-/* 団員一覧 */
+
 
 .member-list {
     max-width: 900px;
 }
 
 
-/* 一人分 */
+
 
 .member-card {
     display: flex;
@@ -944,7 +940,7 @@ h3,
 }
 
 
-/* 写真 */
+
 
 .member-photo {
     width: 130px;
@@ -958,7 +954,7 @@ h3,
 }
 
 
-/* 写真が入った場合 */
+
 
 .member-photo img {
     width: 100%;
@@ -970,7 +966,7 @@ h3,
 }
 
 
-/* 個人情報 */
+
 
 .member-info {
     flex: 1;
@@ -993,7 +989,7 @@ h3,
 }
 
 
-/* スマートフォン */
+
 
 @media (max-width: 700px) {
 
@@ -1031,9 +1027,7 @@ h3,
     }
 
 }
-/* =========================
-   ABOUT
-   ========================= */
+
 
 .about-hero {
     position: relative;
@@ -1046,7 +1040,7 @@ h3,
 }
 
 
-/* 背景写真 */
+
 
 .about-hero > img {
     position: absolute;
@@ -1065,7 +1059,7 @@ h3,
 }
 
 
-/* ABOUT全体 */
+
 
 .about-content {
     position: relative;
@@ -1076,7 +1070,7 @@ h3,
 }
 
 
-/* ABOUTタイトル */
+
 
 .about-content > h1 {
     font-family: "Noto Serif JP", serif;
@@ -1087,9 +1081,7 @@ h3,
 }
 
 
-/* =========================
-   団長挨拶カード
-   ========================= */
+
 
 .leader-message {
     background-color: rgba(255, 255, 255, 0.95);
@@ -1104,7 +1096,7 @@ h3,
 }
 
 
-/* MESSAGEタイトル */
+
 
 .leader-message-header {
     margin-bottom: 40px;
@@ -1123,7 +1115,7 @@ h3,
 }
 
 
-/* 写真＋文章 */
+
 
 .leader-message-body {
     display: flex;
@@ -1134,7 +1126,7 @@ h3,
 }
 
 
-/* 団長写真 */
+
 
 .leader-message-photo {
     width: 180px;
@@ -1157,7 +1149,7 @@ h3,
 }
 
 
-/* 団長挨拶本文 */
+
 
 .leader-message-text {
     flex: 1;
@@ -1189,10 +1181,25 @@ h3,
     margin-bottom: 20px;
 }
 
+.leader-message-goal {
+    margin-top: 2rem;
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid #b8aa83;
+    background: #f4f2ed;
+}
 
-/* =========================
-   ABOUT本文
-   ========================= */
+.leader-message-goal h4 {
+    margin: 0 0 0.6rem;
+    font-family: "Noto Serif JP", serif;
+    font-size: 1.1rem;
+}
+
+.leader-message-goal p {
+    margin: 0;
+}
+
+
+
 
 .about-description {
     max-width: 750px;
@@ -1217,9 +1224,7 @@ h3,
 }
 
 
-/* =========================
-   スマートフォン
-   ========================= */
+
 
 @media (max-width: 700px) {
 
@@ -1257,14 +1262,10 @@ h3,
     }
 
 }
-/* =========================
-   HISTORY
-   ========================= */
 
 
-/* =========================
-   HISTORY HERO
-   ========================= */
+
+
 
 .history-hero {
     min-height: 75vh;
@@ -1302,9 +1303,7 @@ h3,
 
 
 
-/* =========================
-   HISTORY TIMELINE
-   ========================= */
+
 
 .history-timeline {
     padding: 120px 10% 140px 12%;
@@ -1322,7 +1321,7 @@ h3,
 }
 
 
-/* タイムライン全体 */
+
 
 .timeline {
     max-width: 1000px;
@@ -1331,14 +1330,14 @@ h3,
 }
 
 
-/* 縦線 */
+
 
 .timeline::before {
     content: "";
 
     position: absolute;
 
-    /* 点の位置に合わせる */
+    
     left: 330px;
     top: 0;
     bottom: 0;
@@ -1349,7 +1348,7 @@ h3,
 }
 
 
-/* 1つの歴史 */
+
 
 .timeline-item {
     position: relative;
@@ -1361,7 +1360,7 @@ h3,
 
     padding-bottom: 100px;
 
-    /* 最初は少し下に隠す */
+    
     opacity: 0;
     transform: translateY(50px);
 
@@ -1371,7 +1370,7 @@ h3,
 }
 
 
-/* スクロールで表示された後 */
+
 
 .timeline-item.show {
     opacity: 1;
@@ -1379,7 +1378,7 @@ h3,
 }
 
 
-/* 年 */
+
 
 .timeline-year {
     font-family: "Noto Serif JP", serif;
@@ -1393,7 +1392,7 @@ h3,
 }
 
 
-/* 丸 */
+
 
 .timeline-item::before {
     content: "";
@@ -1414,7 +1413,7 @@ h3,
 }
 
 
-/* 内容 */
+
 
 .timeline-content {
     padding-left: 20px;
@@ -1447,9 +1446,7 @@ h3,
 }
 
 
-/* =========================
-   ARCHIVE NOTE
-   ========================= */
+
 
 .history-note {
     padding: 120px 10% 140px 12%;
@@ -1476,9 +1473,7 @@ h3,
 }
 
 
-/* =========================
-   MOBILE
-   ========================= */
+
 
 @media (max-width: 700px) {
 
@@ -1533,9 +1528,7 @@ h3,
     }
 }
 
-/* =========================
-   HOME SECTION LINK
-   ========================= */
+
 
 .home-section-link {
     display: block;
@@ -1551,9 +1544,7 @@ h3,
 .home-section-link h2 {
     transition: 0.3s ease;
 }
-/* =========================
-   PERFORMANCE PAGE
-   ========================= */
+
 
 .performance-page {
     padding: 140px 10% 100px 12%;
@@ -1573,9 +1564,7 @@ h3,
 }
 
 
-/* =========================
-   PERFORMANCE CATEGORY
-   ========================= */
+
 
 .performance-category {
     padding: 100px 10% 120px 12%;
@@ -1589,9 +1578,7 @@ h3,
 }
 
 
-/* =========================
-   SONG LIST
-   ========================= */
+
 
 .song-item {
     width: 100%;
@@ -1659,9 +1646,7 @@ h3,
     background-color: white;
 }
 
-/* =========================
-   OTHER
-   ========================= */
+
 
 .performance-other {
     background-color: white;
@@ -1675,12 +1660,43 @@ h3,
     line-height: 2;
 }
 
+.performance-clap-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+}
 
-/* =========================
-   MOBILE
-   ========================= */
+.performance-clap-list li {
+    min-height: 6rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #d8d2c4;
+    background: #f4f2ed;
+}
+
+.performance-clap-list strong {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-family: "Noto Serif JP", serif;
+    font-size: 1.2rem;
+}
+
+.performance-clap-list span {
+    display: block;
+    line-height: 1.7;
+}
+
+
+
 
 @media (max-width: 700px) {
+
+    .performance-clap-list {
+        grid-template-columns: 1fr;
+    }
 
     .performance-page {
         padding: 100px 7% 80px;
@@ -1711,9 +1727,7 @@ h3,
         font-size: 20px;
     }
 }
-/* =========================
-   LYRICS BOARD
-   ========================= */
+
 
 .song-item {
     width: 100%;
@@ -1729,7 +1743,7 @@ h3,
     background-color: #111111;
     color: white;
 
-    /* 左側を少し削る */
+    
     margin-left: 80px;
 
     padding: 0 50px;
@@ -1775,7 +1789,7 @@ h3,
 }
 
 
-/* 開いているときの矢印 */
+
 
 .song-item.active .song-arrow {
     transform: rotate(90deg);
@@ -1786,7 +1800,7 @@ h3,
 }
 
 
-/* スマホ */
+
 
 @media (max-width: 700px) {
 
@@ -1825,9 +1839,7 @@ h3,
     color: #111;
 }
 
-/* =========================
-   MEMBER 集合写真
-   ========================= */
+
 
 .member-photo-hero {
     position: relative;
@@ -1872,13 +1884,13 @@ h3,
     font-weight: 700;
 }
 
-/* 個人写真との間隔 */
+
 .member-photo-hero + .member-list {
     margin-top: 0;
 }
 
 
-/* スマートフォン */
+
 @media (max-width: 700px) {
 
     .member-photo-hero {
@@ -1890,22 +1902,100 @@ h3,
         font-size: 44px;
     }
 
+    .member-photo-hero img {
+        object-position: center center;
+    }
+
+    .member-ichikisei .member-photo-hero img {
+        width: 100%;
+        max-width: 100%;
+        transform: none;
+        object-position: center 55%;
+    }
+
 }
 .member-ichikisei .member-photo-hero {
     overflow: hidden;
 }
 
 .member-ichikisei .member-photo-hero img {
-    width: 120%;
+    width: 125%;
     max-width: none;
     height: 100%;
     object-fit: cover;
-    object-position: right top;
-    transform: translateX(-16.67%);
+    object-position: right 55%;
+    transform: translateX(-15%);
 }
-/* =========================
-   HOME PERFORMANCE
-========================= */
+
+@media (max-width: 700px) {
+    .performance-background,
+    .history-background,
+    .leader-hero-background,
+    .cheer-hero-background,
+    .band-hero-background,
+    .performance-hero-background,
+    .home-part-background {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: #111;
+    }
+
+    .activity-hero {
+        background-size: auto, contain;
+        background-position: center, 44% center;
+        background-repeat: no-repeat;
+        background-color: #111;
+    }
+
+    .member-photo-hero img,
+    .member-ichikisei .member-photo-hero img {
+        width: 100%;
+        max-width: 100%;
+        object-fit: contain;
+        object-position: center center;
+        transform: none;
+    }
+
+    .member-ichikisei .member-photo-hero img {
+        object-fit: cover;
+        object-position: center 55%;
+        transform: scale(1.08) translateX(0%);
+        transform-origin: center center;
+    }
+
+    .cheer-activity-photo img,
+    .band-activity-photo img {
+        object-fit: contain;
+        object-position: center center;
+    }
+
+    .welcome-hero {
+        padding-top: 7rem;
+        padding-bottom: 3rem;
+    }
+
+    .welcome-hero h1 {
+        font-size: clamp(2rem, 9vw, 3rem);
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .welcome-hero > p:last-child,
+    .welcome-intro article > p:not(.section-label) {
+        line-height: 1.9;
+        overflow-wrap: anywhere;
+    }
+
+    .welcome-posts-section {
+        min-width: 0;
+    }
+
+    .welcome-posts,
+    .welcome-post-card {
+        min-width: 0;
+    }
+}
+
 
 .performance {
     position: relative;
@@ -2048,6 +2138,101 @@ h3,
     line-height: 1.35;
 }
 
+.activity-report-results {
+    min-width: 0;
+}
+
+.activity-report-browse {
+    margin-bottom: 2rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid #d8d2c4;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+.activity-filter-heading {
+    margin: 0 0 0.6rem;
+    color: #77662b;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+}
+
+.activity-report-filters,
+.activity-tag-picker {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.activity-report-filters legend,
+.activity-tag-picker legend {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.activity-filter-category-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.activity-filter-options,
+.activity-tag-options {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 1.1rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid #b8aa83;
+}
+
+.activity-filter-options label,
+.activity-filter-category-options label,
+.activity-tag-options label,
+.activity-tag-general {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid #d4d0c6;
+    border-radius: 999px;
+    background: #fff;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.activity-filter-options label {
+    justify-content: center;
+    text-align: center;
+}
+
+.activity-filter-options input,
+.activity-filter-category-options input,
+.activity-tag-options input,
+.activity-tag-general input {
+    width: auto;
+    margin: 0;
+    accent-color: #756329;
+}
+
+#activityFilterClear {
+    margin-top: 0.85rem;
+    padding: 0.35rem 0;
+    border: 0;
+    background: transparent;
+    color: #655522;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.activity-filter-no-results {
+    padding: 1.5rem;
+    border-left: 1px solid #b8aa83;
+    line-height: 1.8;
+}
+
 .activity-report-empty {
     align-self: center;
     padding: 2rem 0 2rem clamp(1.5rem, 4vw, 3rem);
@@ -2074,6 +2259,18 @@ h3,
     .activity-report-empty {
         padding-block: 1rem;
     }
+
+    .activity-report-browse {
+        padding: 1rem;
+    }
+
+    .activity-filter-options {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .activity-custom-tag-entry {
+        flex-direction: column;
+    }
 }
 
 .performance-content .section-label {
@@ -2097,7 +2294,7 @@ h3,
 }
 
 
-/* マウスを乗せたとき */
+
 
 .performance:hover .performance-background {
     transform: scale(1.04);
@@ -2108,7 +2305,7 @@ h3,
 }
 
 
-/* スマホ */
+
 
 @media (max-width: 700px) {
 
@@ -2219,12 +2416,8 @@ body {
 }
 
 
-/* =========================
-   MENU
-   ========================= */
-   /* =========================
-   ARCHIVE HOME BUTTON
-   ========================= */
+
+   
 
 .archive-home {
     position: fixed;
@@ -2254,10 +2447,7 @@ body {
     opacity: 0.6;
 }
 
-/* =========================
-   共通ハンバーガーメニュー
-   白背景＋黒文字
-   ========================= */
+
 
 .menu-button {
     position: fixed;
@@ -2281,7 +2471,7 @@ body {
 }
 
 
-/* 開いたメニュー */
+
 
 .menu {
     position: fixed;
@@ -2294,10 +2484,10 @@ body {
 
     z-index: 999;
 
-    /* 白地 */
+    
     background: #ffffff;
 
-    /* 透過・ぼかしは使わない */
+    
     backdrop-filter: none;
 
     display: flex;
@@ -2312,14 +2502,14 @@ body {
 }
 
 
-/* 開いた状態 */
+
 
 .menu.open {
     transform: translateX(0);
 }
 
 
-/* メニュー文字 */
+
 
 .menu a {
     color: #111111 !important;
@@ -2329,7 +2519,7 @@ body {
     font-family: "Noto Serif JP", serif;
     transition: opacity 0.2s ease, transform 0.2s ease;
 
-    /* メニュー内では常に黒 */
+    
     mix-blend-mode: normal !important;
 }
 
@@ -2340,7 +2530,7 @@ body {
 }
 
 
-/* マウスを乗せたとき */
+
 
 .menu a:hover {
     opacity: 0.5;
@@ -2349,9 +2539,7 @@ body {
 }
 
 
-/* =========================
-   HERO
-   ========================= */
+
 
 .leader-hero {
     position: relative;
@@ -2365,14 +2553,14 @@ body {
 }
 
 
-/* 写真 */
+
 
 .leader-hero-image {
     position: absolute;
 
     inset: 0;
 
-    background-image: url("../images/ri-da-1.jpg");
+    background-image: url("../images/leader2.jpg");
 
     background-size: cover;
     background-position: center;
@@ -2381,7 +2569,7 @@ body {
 }
 
 
-/* 黒いオーバーレイ */
+
 
 .leader-hero-overlay {
     position: absolute;
@@ -2397,7 +2585,7 @@ body {
 }
 
 
-/* HERO文字 */
+
 
 .leader-hero-content {
     position: absolute;
@@ -2442,7 +2630,7 @@ body {
 }
 
 
-/* 目標 */
+
 
 .leader-motto {
     margin-top: 45px;
@@ -2469,7 +2657,7 @@ body {
 }
 
 
-/* SCROLL */
+
 
 .leader-scroll {
     position: absolute;
@@ -2497,9 +2685,7 @@ body {
 }
 
 
-/* =========================
-   SECTIONS
-   ========================= */
+
 
 .leader-section {
     min-height: 600px;
@@ -2547,9 +2733,7 @@ body {
 }
 
 
-/* =========================
-   FOOTER
-   ========================= */
+
 
 footer {
     padding: 50px 10%;
@@ -2564,9 +2748,7 @@ footer {
 }
 
 
-/* =========================
-   MOBILE
-   ========================= */
+
 
 @media (max-width: 700px) {
 
@@ -2607,32 +2789,30 @@ footer {
     left: 20px;
     font-size: 13px;
 }
-/* =========================
-   HOME ABOUT / PARTS
-========================= */
 
-/* ABOUTとPARTSを左右半分ずつにする */
+
+
 .about-parts {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
 }
 
-/* 左：ABOUT */
+
 .about-parts > .about {
     min-width: 0;
     min-height: 650px;
     padding: 0;
 }
 
-/* 右：PARTS */
+
 .about-parts > .parts {
     min-width: 0;
     min-height: 650px;
     padding: 80px 40px;
 }
 
-/* 3つの部を横一列 */
+
 .about-parts .parts-container {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2641,7 +2821,7 @@ footer {
     margin-top: 40px;
 }
 
-/* 各部カード */
+
 .about-parts .part {
     position: relative;
     width: 100%;
@@ -2661,21 +2841,21 @@ footer {
     transition: transform 0.4s ease;
 }
 
-/* 各部の写真 */
+
 
 .part-leader {
-    background-image: url("../images/ri-da-1.jpg");
+    background-image: url("../images/leader2.jpg");
 }
 
 .part-cheer {
-    background-image: url("../images/tia1.jpg");
+    background-image: url("../images/cheer2.jpg");
 }
 
 .part-band {
-    background-image: url("../images/suisou1.jpg");
+    background-image: url("../images/suisou2.jpg");
 }
 
-/* 写真の上の暗いフィルター */
+
 
 .part-overlay {
     position: absolute;
@@ -2690,7 +2870,7 @@ footer {
     transition: background 0.4s ease;
 }
 
-/* 文字 */
+
 
 .part-content {
     position: relative;
@@ -2713,7 +2893,7 @@ footer {
     letter-spacing: 0.1em;
 }
 
-/* ホバー */
+
 
 .part:hover {
     transform: translateY(-5px);
@@ -2727,7 +2907,7 @@ footer {
     );
 }
 
-/* スマホ */
+
 
 @media (max-width: 700px) {
     .about-parts {
@@ -2751,9 +2931,7 @@ footer {
         height: 280px;
     }
 }
-/* =========================
-   PERFORMANCE HERO
-========================= */
+
 
 .performance-hero {
     position: relative;
@@ -2818,7 +2996,8 @@ footer {
 }
 .about {
     position: relative;
-    min-height: 600px;
+    min-height: 100vh;
+    min-height: 100svh;
     overflow: hidden;
     color: white;
 }
@@ -2832,11 +3011,12 @@ footer {
             rgba(0, 0, 0, 0.4),
             rgba(0, 0, 0, 0.6)
         ),
-        url("../images/daisan1.png");
+        url("../images/dan.JPG"),
+        url("../images/hata2.jpg");
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+    background-size: auto, 85% auto, cover;
+    background-position: center, center, center;
+    background-repeat: no-repeat, no-repeat, no-repeat;
 
     transition: transform 0.8s ease;
 }
@@ -2845,7 +3025,8 @@ footer {
     position: relative;
     z-index: 2;
 
-    min-height: 600px;
+    min-height: 100vh;
+    min-height: 100svh;
 
     display: flex;
     flex-direction: column;
@@ -2881,14 +3062,10 @@ footer {
 .about:hover .about-content h2 {
     transform: translateX(10px);
 }
-/* =========================================================
-   CHEER PAGE
-========================================================= */
 
 
-/* =========================
-   HERO
-========================= */
+
+
 
 .cheer-page {
     position: relative;
@@ -2906,7 +3083,7 @@ footer {
             rgba(0, 0, 0, 0.42),
             rgba(0, 0, 0, 0.68)
         ),
-        url("../images/tia1.jpg");
+        url("../images/cheer2.jpg");
 
     background-size: cover;
     background-position: center;
@@ -2961,7 +3138,7 @@ footer {
 }
 
 
-/* 活動目標 */
+
 
 .cheer-motto {
     margin-top: 45px;
@@ -3007,9 +3184,7 @@ footer {
 }
 
 
-/* =========================
-   共通セクション
-========================= */
+
 
 .cheer-section-inner {
     max-width: 1100px;
@@ -3035,9 +3210,7 @@ footer {
 }
 
 
-/* =========================
-   MESSAGE
-========================= */
+
 
 .cheer-greeting {
     background: #ffffff;
@@ -3105,9 +3278,7 @@ footer {
 }
 
 
-/* =========================
-   MOTTO
-========================= */
+
 
 .cheer-motto-section {
     min-height: 600px;
@@ -3143,11 +3314,7 @@ footer {
 
     font-family: "Noto Serif JP", serif;
 
-    font-size: clamp(
-        120px,
-        20vw,
-        280px
-    );
+    font-size: clamp(2.5rem, 8vw, 5rem);
 
     line-height: 0.9;
 
@@ -3166,9 +3333,7 @@ footer {
 }
 
 
-/* =========================
-   ACTIVITY
-========================= */
+
 
 .cheer-activity {
     background: #f2f2f2;
@@ -3204,6 +3369,8 @@ footer {
 
     object-fit: cover;
 
+    object-position: 60% center;
+
     display: block;
 
     transition: transform 0.8s ease;
@@ -3227,9 +3394,7 @@ footer {
 }
 
 
-/* =========================
-   TRAINING
-========================= */
+
 
 .cheer-training {
     background: white;
@@ -3285,9 +3450,7 @@ footer {
 }
 
 
-/* =========================
-   INSTAGRAM
-========================= */
+
 
 .cheer-instagram {
     background: #111111;
@@ -3368,9 +3531,7 @@ footer {
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+
 
 @media (max-width: 700px) {
 
@@ -3421,7 +3582,7 @@ footer {
 
 
     .cheer-motto-inner h2 {
-        font-size: 150px;
+        font-size: clamp(2rem, 9vw, 3.25rem);
     }
 
 
@@ -3459,14 +3620,10 @@ footer {
     }
 
 }
-/* =========================================================
-   BAND PAGE
-========================================================= */
 
 
-/* =========================
-   HERO
-========================= */
+
+
 
 .band-page {
     position: relative;
@@ -3484,7 +3641,7 @@ footer {
             rgba(0, 0, 0, 0.42),
             rgba(0, 0, 0, 0.68)
         ),
-        url("../images/suisou1.jpg");
+        url("../images/suisou2.jpg");
 
     background-size: cover;
     background-position: center;
@@ -3539,9 +3696,7 @@ footer {
 }
 
 
-/* =========================
-   活動目標
-========================= */
+
 
 .band-motto {
     margin-top: 45px;
@@ -3587,9 +3742,7 @@ footer {
 }
 
 
-/* =========================
-   共通セクション
-========================= */
+
 
 .band-section-inner {
     max-width: 1100px;
@@ -3615,9 +3768,7 @@ footer {
 }
 
 
-/* =========================
-   MESSAGE
-========================= */
+
 
 .band-greeting {
     background: #ffffff;
@@ -3680,9 +3831,7 @@ footer {
 }
 
 
-/* =========================
-   MOTTO
-========================= */
+
 
 .band-motto-section {
     min-height: 600px;
@@ -3718,11 +3867,7 @@ footer {
 
     font-family: "Noto Serif JP", serif;
 
-    font-size: clamp(
-        150px,
-        25vw,
-        330px
-    );
+    font-size: clamp(2.5rem, 8vw, 5rem);
 
     line-height: 0.9;
 
@@ -3741,9 +3886,7 @@ footer {
 }
 
 
-/* =========================
-   ACTIVITY
-========================= */
+
 
 .band-activity {
     background: #f2f2f2;
@@ -3802,9 +3945,7 @@ footer {
 }
 
 
-/* =========================
-   TRAINING
-========================= */
+
 
 .band-training {
     background: white;
@@ -3860,9 +4001,7 @@ footer {
 }
 
 
-/* =========================
-   INSTAGRAM
-========================= */
+
 
 .band-instagram {
     background: #111111;
@@ -3943,9 +4082,7 @@ footer {
 }
 
 
-/* =========================
-   MOBILE
-========================= */
+
 
 @media (max-width: 700px) {
 
@@ -3996,7 +4133,7 @@ footer {
 
 
     .band-motto-inner h2 {
-        font-size: 180px;
+        font-size: clamp(2rem, 9vw, 3.25rem);
     }
 
 
@@ -4034,9 +4171,7 @@ footer {
     }
 
 }
-/* =========================
-   RELATED LINKS
-========================= */
+
 
 .links-related {
     padding: 50px 12%;
@@ -4091,9 +4226,7 @@ footer {
     }
 
 }
-/* =========================
-   CONTACT PAGE
-========================= */
+
 
 .contact-page {
     padding: 160px 12% 100px;
@@ -4152,10 +4285,7 @@ footer {
         gap: 40px;
     }
 
-}/* =========================================================
-   RESPONSIVE LAYOUT LAYER
-   Fluid sizing with breakpoint-based layout changes.
-   ========================================================= */
+}
 
 :root {
     --page-gutter: clamp(1.25rem, 6vw, 7.5rem);
@@ -4188,7 +4318,7 @@ video {
 
 
 @media (max-width: 760px) {
-    /* Replace legacy desktop offsets on narrow screens. */
+    
     .links-page,
     .leader-page,
     .leader-greeting,
@@ -4251,8 +4381,8 @@ video {
 
     .cheer-motto-inner h2,
     .band-motto-inner h2 {
-        font-size: clamp(6rem, 28vw, 11rem);
-        letter-spacing: 0.02em;
+        font-size: clamp(2rem, 9vw, 3.25rem);
+        letter-spacing: 0.04em;
     }
     .about-content,
     .history-hero-content,
@@ -4376,9 +4506,7 @@ video {
 
 
 
-/* =========================================================
-   TEXT FIT AND NATURAL WRAPPING
-   ========================================================= */
+
 
 html {
     line-break: strict;
@@ -4466,11 +4594,9 @@ button {
         letter-spacing: 0.35em;
     }
 }
-/* =========================================================
-   PAGE-SPECIFIC ALIGNMENT AND SMALL-SCREEN FIXES
-   ========================================================= */
 
-/* Keep each song row on the same three-column alignment. */
+
+
 .song-item {
     display: grid;
     grid-template-columns: 3.5rem minmax(0, 1fr) 1.5rem;
@@ -4644,9 +4770,7 @@ button {
 }
 
 
-/* =========================================================
-   MEMBER PHOTO POPUPS
-   ========================================================= */
+
 
 .member-photo-hero {
     cursor: pointer;
@@ -4778,7 +4902,7 @@ body.member-modal-open {
     overflow: hidden;
 }
 
-/* HOME: 演目セクションのトーンで三つの部を縦に見せる */
+
 .hero,
 .about,
 .parts,
@@ -4875,11 +4999,12 @@ body.member-modal-open {
 }
 
 .part-leader .home-part-background {
-    background-image: url("../images/ri-da-1.jpg");
-    background-position: center 38%;
+    background-image: url("../images/leader2.jpg");
+    background-position: center 52%;
+    transform: scale(1.12);
 }
 
-/* 歌詞ボード末尾のYouTubeリンクが切れないよう下余白を確保 */
+
 .lyrics-board.open {
     padding-bottom: 4rem;
 }
@@ -4891,11 +5016,11 @@ body.member-modal-open {
 }
 
 .part-cheer .home-part-background {
-    background-image: url("../images/tia1.jpg");
+    background-image: url("../images/cheer2.jpg");
 }
 
 .part-band .home-part-background {
-    background-image: url("../images/suisou1.jpg");
+    background-image: url("../images/suisou2.jpg");
 }
 
 .home-part-panel.part-leader,
@@ -4954,6 +5079,10 @@ body.member-modal-open {
 
 .home-part-panel:hover .home-part-background {
     transform: scale(1.045);
+}
+
+.home-part-panel.part-leader:hover .home-part-background {
+    transform: scale(1.16);
 }
 
 .home-part-panel:hover .home-part-content h3 {
@@ -5043,9 +5172,7 @@ body.member-modal-open {
         padding-inline: 1rem;
     }
 }
-/* =========================
-   ACTIVITY ADMIN
-   ========================= */
+
 
 .activity-admin {
     padding: 50px 12% 80px;
@@ -5070,7 +5197,7 @@ body.member-modal-open {
 }
 
 
-/* オーバーレイ */
+
 
 .activity-admin-overlay {
     position: fixed;
@@ -5099,7 +5226,7 @@ body.member-modal-open {
 }
 
 
-/* 管理パネル */
+
 
 .activity-admin-panel {
     position: relative;
@@ -5130,7 +5257,7 @@ body.member-modal-open {
 }
 
 
-/* 閉じるボタン */
+
 
 .activity-admin-close {
     position: absolute;
@@ -5151,7 +5278,7 @@ body.member-modal-open {
 }
 
 
-/* 入力 */
+
 
 .activity-admin-panel label {
     display: block;
@@ -5166,7 +5293,8 @@ body.member-modal-open {
 
 
 .activity-admin-panel input,
-.activity-admin-panel textarea {
+.activity-admin-panel textarea,
+.activity-admin-panel select {
     box-sizing: border-box;
 
     width: 100%;
@@ -5193,13 +5321,14 @@ body.member-modal-open {
 
 
 .activity-admin-panel input:focus,
-.activity-admin-panel textarea:focus {
+.activity-admin-panel textarea:focus,
+.activity-admin-panel select:focus {
     border-color: #111;
     background: white;
 }
 
 
-/* ボタン */
+
 
 .activity-admin-panel button:not(
     .activity-admin-close
@@ -5232,7 +5361,7 @@ body.member-modal-open {
 }
 
 
-/* メッセージ */
+
 
 .activity-admin-error {
     color: #a00000;
@@ -5246,7 +5375,7 @@ body.member-modal-open {
 }
 
 
-/* スマホ */
+
 
 @media (max-width: 700px) {
 
@@ -5261,6 +5390,11 @@ body.member-modal-open {
 
     .activity-admin-panel h2 {
         font-size: 28px;
+    }
+
+    .activity-admin-panel .activity-tag-options,
+    .activity-admin-panel #activityCustomTags {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
 }
@@ -5292,9 +5426,7 @@ body.member-modal-open {
 .activity-report-delete-button:hover {
     background: #555 !important;
 }
-/* =========================
-   ACTIVITY REPORT
-========================= */
+
 
 .activity-report-card {
     border: 1px solid #d8d8d8;
@@ -5307,8 +5439,189 @@ body.member-modal-open {
     border-color: #999999;
 }
 
+.activity-report-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.9rem 0 1rem;
+    padding: 0;
+    list-style: none;
+}
 
-/* 過去の活動記録 */
+.activity-report-labels li {
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: #eee9da;
+    color: #655522;
+    font-size: 0.78rem;
+}
+
+.activity-admin-report-labels {
+    display: block;
+    width: 100%;
+    margin: 0.35rem 0 0.8rem;
+    color: #655522;
+}
+
+.activity-admin-report-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #d8d2c4;
+}
+
+.activity-admin-report-title {
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.activity-report-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.activity-admin-panel .activity-report-admin-actions button {
+    min-width: 4.5rem;
+    margin: 0;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid #222;
+    border-radius: 2px;
+    background: #222;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.activity-admin-panel .activity-report-admin-actions .activity-report-delete-button {
+    border-color: #aaa !important;
+    background: #fff;
+    color: #444;
+}
+
+.activity-admin-panel .activity-report-admin-actions button:hover {
+    background: #fff;
+    color: #111;
+}
+
+.activity-admin-panel .activity-report-admin-actions .activity-report-delete-button:hover {
+    border-color: #8a3333 !important;
+    background: #8a3333;
+    color: #fff;
+}
+
+.activity-tag-picker {
+    margin: 1rem 0 1.5rem;
+}
+
+.activity-admin-panel .activity-tag-picker {
+    padding: 1rem;
+    border: 1px solid #c8c8c8;
+    background: #fafafa;
+}
+
+.activity-admin-panel .activity-tag-picker legend {
+    padding: 0 0.4rem;
+}
+
+.activity-admin-panel .activity-tag-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.activity-tag-general {
+    margin-top: 0.7rem;
+}
+
+.activity-custom-tag-control {
+    margin-top: 1.1rem;
+}
+
+.activity-custom-tag-control > label {
+    margin: 0 0 0.5rem;
+}
+
+.activity-admin-panel .activity-tag-options label {
+    display: inline-flex;
+    width: auto;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.45rem 0.25rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.82rem;
+    letter-spacing: normal;
+}
+
+.activity-admin-panel .activity-tag-general {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.9rem 0 0;
+    padding: 0.9rem 0 0;
+    border: 0;
+    border-top: 1px solid #c8c8c8;
+    border-radius: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: 0.82rem;
+    letter-spacing: normal;
+}
+
+.activity-admin-panel #activityCustomTags {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0.5rem 0 0;
+    padding: 0;
+    border: 0;
+}
+
+.activity-admin-panel .activity-tag-options input,
+.activity-admin-panel .activity-tag-general input {
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.activity-custom-tag-entry {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.activity-custom-tag-entry input {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+}
+
+.activity-admin-panel .activity-custom-tag-entry button {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid #222;
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.activity-custom-tags {
+    margin-top: 0.6rem;
+}
+
+#activitySportsOptions[hidden] {
+    display: none;
+}
+
+
+
 
 .past-activity-reports-button {
     display: block;
@@ -5344,4 +5657,151 @@ body.member-modal-open {
         margin-top: 35px;
     }
 
+}
+
+@media (max-width: 700px) {
+    .performance-hero,
+    .cheer-page,
+    .band-page {
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+    }
+
+    .performance-hero-content,
+    .cheer-hero-content,
+    .band-hero-content {
+        min-height: 0;
+        height: 100%;
+        padding: 4.5rem var(--page-gutter) 1.5rem;
+        justify-content: center;
+    }
+
+    .performance-hero-content h1 {
+        font-size: clamp(3rem, 12vw, 4rem);
+    }
+
+    .about-hero,
+    .history-hero {
+        min-height: auto;
+    }
+
+    .member-photo-hero {
+        height: auto;
+        aspect-ratio: 4 / 3;
+        margin-bottom: 2rem;
+    }
+
+    .home-part-panel {
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+        padding: 2rem var(--page-gutter);
+    }
+
+    .performance {
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+    }
+
+    .performance-content {
+        min-height: 0;
+        height: 100%;
+        padding: 2rem var(--page-gutter);
+    }
+
+    .history {
+        min-height: 0;
+        aspect-ratio: 1 / 1;
+    }
+
+    .history-content {
+        min-height: 0;
+        height: 100%;
+        padding: 2rem var(--page-gutter);
+    }
+
+    .performance-background,
+    .history-background,
+    .cheer-hero-background,
+    .band-hero-background,
+    .performance-hero-background,
+    .home-part-background {
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-color: #111;
+    }
+
+    .activity-hero {
+        padding-top: 5rem;
+        padding-bottom: 1.5rem;
+        background-size: auto, contain;
+        background-position: center, 44% center;
+    }
+
+    .cheer-activity-photo img,
+    .band-activity-photo img {
+        object-fit: contain;
+        object-position: center center;
+    }
+}
+
+@media (max-width: 760px) {
+    .about {
+        min-height: 0;
+        background-color: #111;
+    }
+
+    .about .about-content {
+        min-height: 0;
+        justify-content: flex-start;
+        padding: 2rem var(--page-gutter);
+    }
+
+    .about .about-background {
+        display: block;
+        background-image:
+            linear-gradient(
+                rgba(0, 0, 0, 0.48),
+                rgba(0, 0, 0, 0.68)
+            ),
+            url("../images/hata2.jpg");
+        background-size: auto, cover;
+        background-position: center, center;
+        background-repeat: no-repeat, no-repeat;
+    }
+
+    .history-timeline .timeline-year,
+    .history-timeline .timeline-content {
+        transform: translateX(3px);
+    }
+
+    .history-timeline .timeline {
+        --timeline-marker-size: 24px;
+        --timeline-line-left: calc(-1 * var(--page-gutter) + 0.75rem);
+    }
+
+    .history-timeline .timeline::before {
+        left: var(--timeline-line-left);
+        width: 2px;
+    }
+
+    .history-timeline .timeline-item::before {
+        left: calc(var(--timeline-line-left) - var(--timeline-marker-size) / 2);
+        top: 0.1rem;
+        width: var(--timeline-marker-size);
+        height: var(--timeline-marker-size);
+        transform: none;
+        border-radius: 0;
+        background-color: transparent;
+        background-image: url("../images/ityou.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+}
+
+@media (max-width: 760px) {
+    .welcome-intro h2 {
+        margin-bottom: 0.75rem;
+        line-height: 1.7;
+    }
 }

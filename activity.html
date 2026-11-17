@@ -35,11 +35,10 @@
 
 
 <body class="activity-page">
+    <a href="index.html" class="archive-home" aria-label="ホームのトップへ戻る">大阪大学応援団</a>
 
 
-    <!-- =========================
-         ハンバーガーメニュー
-         ========================= -->
+    
 
     <button
         class="menu-button"
@@ -57,15 +56,15 @@
             <div class="menu-submenu" id="aboutSubmenu" hidden>
                 <a href="about.html">ABOUT</a>
                 <a href="leader.html">LEADER</a>
-                <a href="cheer.html">CHEER</a>
-                <a href="band.html">BAND</a>
+                <a href="cheer.html">CHEER LEADER</a>
+                <a href="band.html">BRASS</a>
             </div>
         </div>
         <a href="member.html">MEMBER</a>
         <a href="performance.html">PERFORMANCE</a>
         <a href="history.html">HISTORY</a>
         <a href="activity.html">活動記録</a>
-        <a href="welcome.html">高校生・新入生の方へ</a>
+        <a href="welcome.html">新入生・入団希望の皆様へ</a>
         <a href="links.html">LINKS</a>
         <a href="contact.html">CONTACT</a>
     </nav>
@@ -74,9 +73,7 @@
     <main>
 
 
-        <!-- =========================
-             ACTIVITY HERO
-             ========================= -->
+        
 
         <header class="activity-hero">
 
@@ -97,9 +94,7 @@
 
 
 
-        <!-- =========================
-             REPORTS
-             ========================= -->
+        
 
         <section
             class="activity-report-list"
@@ -119,7 +114,30 @@
             </div>
 
 
-            <!-- 活動報告がここに入る -->
+            <div class="activity-report-results">
+                <div class="activity-report-browse">
+                    <p class="activity-filter-heading">分類から探す</p>
+                    <fieldset class="activity-report-filters" aria-label="活動記録の絞り込み">
+                        <legend>分類・ラベル（分類内では複数選択可）</legend>
+                        <div class="activity-filter-category-options">
+                            <label><input type="checkbox" name="activityFilter" value="category:演舞演奏会">演舞演奏会</label>
+                            <label><input type="checkbox" name="activityFilter" value="category:試合応援">試合応援</label>
+                        </div>
+                        <div class="activity-filter-options">
+                            <label><input type="checkbox" name="activityFilter" value="tag:アイスホッケー">アイスホッケー</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:アメフト">アメフト</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:男子ラクロス">男子ラクロス</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:女子ラクロス">女子ラクロス</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:準硬式野球">準硬式野球</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:硬式野球">硬式野球</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:その他">その他</label>
+                            <label><input type="checkbox" name="activityFilter" value="tag:七大戦">七大戦</label>
+                        </div>
+                        <button type="button" id="activityFilterClear">すべて表示</button>
+                    </fieldset>
+                </div>
+
+            
 
             <div id="activityReports">
 
@@ -137,6 +155,7 @@
                 </div>
 
             </div>
+            </div>
 
         </section>
 
@@ -144,9 +163,7 @@
 
 
 
-    <!-- =========================
-         編集ボタン
-         ========================= -->
+    
 
     <section class="activity-admin">
 
@@ -161,9 +178,7 @@
 
 
 
-    <!-- =========================
-         管理画面オーバーレイ
-         ========================= -->
+    
 
     <div
         class="activity-admin-overlay"
@@ -173,7 +188,7 @@
         <div class="activity-admin-panel">
 
 
-            <!-- 閉じる -->
+            
 
             <button
                 type="button"
@@ -186,9 +201,7 @@
 
 
 
-            <!-- =========================
-                 パスワード入力
-                 ========================= -->
+            
 
             <div id="activityPasswordArea">
 
@@ -201,15 +214,22 @@
                 </h2>
 
                 <p>
-                    管理者パスワードを入力してください。
+                    管理者アカウントでログインしてください。
                 </p>
+
+                <input
+                    type="email"
+                    id="activityEmail"
+                    placeholder="メールアドレス"
+                    autocomplete="username"
+                >
 
 
                 <input
                     type="password"
                     id="activityPassword"
                     placeholder="パスワード"
-                    autocomplete="off"
+                    autocomplete="current-password"
                 >
 
 
@@ -230,14 +250,14 @@
 
 
 
-            <!-- =========================
-                 管理画面
-                 ========================= -->
+            
 
             <div
                 id="activityEditorArea"
                 style="display: none;"
             >
+
+                <button type="button" id="activityAdminLogout">ログアウト</button>
 
                 <p class="section-label">
                     ADMIN
@@ -248,9 +268,7 @@
                 </h2>
 
 
-                <!-- =========================
-                     新規記事
-                     ========================= -->
+                
 
                 <div class="activity-editor-section">
 
@@ -268,6 +286,34 @@
                         id="activityTitle"
                         placeholder="活動報告の題名"
                     >
+
+                    <label for="activityCategory">分類</label>
+                    <select id="activityCategory" required>
+                        <option value="演舞演奏会">演舞演奏会</option>
+                        <option value="試合応援">試合応援</option>
+                    </select>
+
+                    <fieldset class="activity-tag-picker">
+                        <legend>ラベル（複数選択可）</legend>
+                        <div class="activity-tag-options" id="activitySportsOptions">
+                            <label><input type="checkbox" name="activityTag" value="アイスホッケー">アイスホッケー</label>
+                            <label><input type="checkbox" name="activityTag" value="アメフト">アメフト</label>
+                            <label><input type="checkbox" name="activityTag" value="男子ラクロス">男子ラクロス</label>
+                            <label><input type="checkbox" name="activityTag" value="女子ラクロス">女子ラクロス</label>
+                            <label><input type="checkbox" name="activityTag" value="準硬式野球">準硬式野球</label>
+                            <label><input type="checkbox" name="activityTag" value="硬式野球">硬式野球</label>
+                            <label><input type="checkbox" name="activityTag" value="その他">その他</label>
+                        </div>
+                        <label class="activity-tag-general"><input type="checkbox" name="activityTag" value="七大戦">七大戦</label>
+                        <div class="activity-custom-tag-control">
+                            <label for="activityCustomTag">追加ラベル（その他）</label>
+                            <div class="activity-custom-tag-entry">
+                                <input type="text" id="activityCustomTag" maxlength="30" placeholder="例：定期戦">
+                                <button type="button" id="activityAddCustomTag">ラベルを追加</button>
+                            </div>
+                            <div class="activity-tag-options" id="activityCustomTags"></div>
+                        </div>
+                    </fieldset>
 
 
                     <label for="activityThumbnailFile">
@@ -323,9 +369,7 @@
 
 
 
-                <!-- =========================
-                     既存記事
-                     ========================= -->
+                
 
                 <div class="activity-editor-section">
 
@@ -352,23 +396,19 @@
 
 
 
-    <!-- =========================
-         FOOTER
-         ========================= -->
+    
 
     <footer>
 
         <p>
-            OSAKA UNIVERSITY CHEERING PARTY
+            THE UNIVERSITY OF OSAKA CHEERING PARTY
         </p>
 
     </footer>
 
 
 
-    <!-- =========================
-         Supabase
-         ========================= -->
+    
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 

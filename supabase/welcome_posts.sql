@@ -1,6 +1,3 @@
--- 高校生・新入生向けページの企画投稿テーブル
--- 現在のサイトは画面内の共通パスワード方式のため、Supabase側では未認証ロールにも投稿操作を許可しています。
--- このため、パスワード画面を経由せずAPIから追加・編集・削除することも可能です。
 create table if not exists public.welcome_posts (
     id uuid primary key default gen_random_uuid(),
     title text not null,
@@ -11,37 +8,63 @@ create table if not exists public.welcome_posts (
     created_at timestamptz not null default now()
 );
 
+create table if not exists public.site_admins (
+    user_id uuid primary key references auth.users(id) on delete cascade,
+    created_at timestamptz not null default now()
+);
+
 alter table public.welcome_posts enable row level security;
+alter table public.site_admins enable row level security;
 
-grant select, insert, update, delete
-on public.welcome_posts
-to anon, authenticated;
+revoke insert, update, delete on public.welcome_posts from anon, authenticated;
+grant select on public.welcome_posts to anon, authenticated;
+grant insert, update, delete on public.welcome_posts to authenticated;
+revoke all on public.site_admins from anon, authenticated;
+grant select on public.site_admins to authenticated;
 
-drop policy if exists "welcome_posts_public_read" on public.welcome_posts;
+do $$
+declare
+    policy_row record;
+begin
+    for policy_row in
+        select schemaname, tablename, policyname
+        from pg_policies
+        where schemaname = 'public'
+          and tablename = 'welcome_posts'
+    loop
+        execute format('drop policy %I on %I.%I', policy_row.policyname, policy_row.schemaname, policy_row.tablename);
+    end loop;
+end
+$$;
+
+drop policy if exists "site_admins_select_self" on public.site_admins;
+create policy "site_admins_select_self"
+on public.site_admins
+for select
+to authenticated
+using (user_id = auth.uid());
+
 create policy "welcome_posts_public_read"
 on public.welcome_posts
 for select
 to anon, authenticated
 using (true);
 
-drop policy if exists "welcome_posts_public_insert" on public.welcome_posts;
-create policy "welcome_posts_public_insert"
+create policy "welcome_posts_admin_insert"
 on public.welcome_posts
 for insert
-to anon, authenticated
-with check (true);
+to authenticated
+with check (exists (select 1 from public.site_admins where user_id = auth.uid()));
 
-drop policy if exists "welcome_posts_public_update" on public.welcome_posts;
-create policy "welcome_posts_public_update"
+create policy "welcome_posts_admin_update"
 on public.welcome_posts
 for update
-to anon, authenticated
-using (true)
-with check (true);
+to authenticated
+using (exists (select 1 from public.site_admins where user_id = auth.uid()))
+with check (exists (select 1 from public.site_admins where user_id = auth.uid()));
 
-drop policy if exists "welcome_posts_public_delete" on public.welcome_posts;
-create policy "welcome_posts_public_delete"
+create policy "welcome_posts_admin_delete"
 on public.welcome_posts
 for delete
-to anon, authenticated
-using (true);
+to authenticated
+using (exists (select 1 from public.site_admins where user_id = auth.uid()));

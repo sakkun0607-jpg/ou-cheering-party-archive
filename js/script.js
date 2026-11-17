@@ -1,6 +1,3 @@
-// =========================
-// Supabase
-// =========================
 
 const SUPABASE_URL =
     "https://minorohtjrqsjgpvrarj.supabase.co";
@@ -31,13 +28,45 @@ if (window.supabase) {
 }
 
 
-// 管理画面のパスワード（ブラウザー上で確認できる方式）
-const ACTIVITY_ADMIN_PASSWORD = "oucp1962";
+async function isSiteAdmin() {
+    if (!supabaseClient) return false;
+    const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError || !session) return false;
+    const { data, error } = await supabaseClient
+        .from("site_admins")
+        .select("user_id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+    if (error) throw error;
+    return Boolean(data);
+}
+
+async function signInSiteAdmin(email, password) {
+    if (!supabaseClient) throw new Error("Supabaseに接続できません。");
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    try {
+        if (await isSiteAdmin()) return true;
+    } catch (error) {
+        await supabaseClient.auth.signOut();
+        throw error;
+    }
+    await supabaseClient.auth.signOut();
+    throw new Error("このアカウントには管理権限がありません。");
+}
+
+async function signOutSiteAdmin() {
+    if (!supabaseClient) return;
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) throw error;
+}
+
+function isActivityMetadataColumnError(error) {
+    return error?.code === "42703" || error?.code === "PGRST204" ||
+        /column .*?(category|tags)|schema cache/i.test(error?.message || "");
+}
 
 
-// =========================
-// 共通：ハンバーガーメニュー
-// =========================
 
 const menuButton =
     document.getElementById("menuButton");
@@ -95,31 +124,31 @@ if (menuButton && menu) {
 }
 
 
-// =========================
-// NキーでHOMEへ
-// =========================
 
 document.addEventListener(
     "keydown",
     function (event) {
 
         if (
+            event.ctrlKey &&
+            !event.altKey &&
+            !event.shiftKey &&
             typeof event.key === "string" &&
-            event.key.toLowerCase() === "n"
+            event.key.toLowerCase() === "w"
         ) {
+            event.preventDefault();
+            event.stopPropagation();
 
             window.location.href =
                 "index.html";
 
         }
 
-    }
+    },
+    { capture: true }
 );
 
 
-// =========================
-// HISTORY スクロール表示
-// =========================
 
 const timelineItems =
     document.querySelectorAll(
@@ -161,10 +190,6 @@ timelineItems.forEach(
 );
 
 
-// =========================
-// HOMEの三つの部
-// スクロール表示
-// =========================
 
 const homePartCards =
     document.querySelectorAll(
@@ -181,9 +206,6 @@ homePartCards.forEach(
 );
 
 
-// =========================
-// HOME HERO SCROLL
-// =========================
 
 const hero =
     document.querySelector(".hero");
@@ -215,9 +237,6 @@ if (hero) {
 }
 
 
-// =========================
-// PERFORMANCE LYRICS
-// =========================
 
 const songItems =
     document.querySelectorAll(
@@ -282,9 +301,6 @@ songItems.forEach(
 );
 
 
-// =========================
-// MENU TEXT COLOR
-// =========================
 
 if (menuButton && menu) {
 
@@ -440,14 +456,87 @@ if (menuButton && menu) {
 }
 
 
-// ============================================================
-// ACTIVITY REPORT
-// ============================================================
 
 const activityReports =
     document.getElementById(
         "activityReports"
     );
+
+const activityFilterInputs =
+    document.querySelectorAll('input[name="activityFilter"]');
+const activityFilterOptions = document.querySelector(".activity-filter-options");
+
+const activityFilterClear =
+    document.getElementById("activityFilterClear");
+
+let allActivityReports = [];
+
+function renderFilteredActivityReports() {
+    if (!activityReports) return;
+
+    const selectedFilters = Array.from(document.querySelectorAll('input[name="activityFilter"]'))
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+    const selectedCategories = selectedFilters
+        .filter((filter) => filter.startsWith("category:"))
+        .map((filter) => filter.slice("category:".length));
+    const selectedTags = selectedFilters
+        .filter((filter) => filter.startsWith("tag:"))
+        .map((filter) => filter.slice("tag:".length));
+
+    const filteredReports = selectedFilters.length === 0
+        ? allActivityReports
+        : allActivityReports.filter((report) => {
+            const categoryMatches = selectedCategories.length === 0 || selectedCategories.includes(report.category);
+            const tags = Array.isArray(report.tags) ? report.tags : [];
+            const tagsMatch = selectedTags.length === 0 || selectedTags.some((tag) => tags.includes(tag));
+            return categoryMatches && tagsMatch;
+        });
+
+    activityReports.replaceChildren();
+
+    if (filteredReports.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "activity-filter-no-results";
+        empty.textContent = selectedFilters.length
+            ? "選択した分類・ラベルの記事はありません。"
+            : "現在、掲載内容を準備しています。";
+        activityReports.appendChild(empty);
+        return;
+    }
+
+    filteredReports.forEach((report) => {
+        activityReports.appendChild(createActivityArticle(report));
+    });
+}
+
+activityFilterInputs.forEach((input) => {
+    input.addEventListener("change", renderFilteredActivityReports);
+});
+
+function addActivityTagFilter(tag) {
+    if (!activityFilterOptions || !tag) return;
+    const value = `tag:${tag}`;
+    const existing = activityFilterOptions.querySelectorAll('input[name="activityFilter"]');
+    if (Array.from(existing).some((input) => input.value === value)) return;
+
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.name = "activityFilter";
+    input.value = value;
+    input.addEventListener("change", renderFilteredActivityReports);
+    label.append(input, document.createTextNode(tag));
+    activityFilterOptions.appendChild(label);
+}
+
+if (activityFilterClear) {
+    activityFilterClear.addEventListener("click", () => {
+        document.querySelectorAll('input[name="activityFilter"]')
+            .forEach((input) => { input.checked = false; });
+        renderFilteredActivityReports();
+    });
+}
 
 
 const editActivityButton =
@@ -472,6 +561,10 @@ const activityPasswordArea =
     document.getElementById(
         "activityPasswordArea"
     );
+
+
+const activityEmail =
+    document.getElementById("activityEmail");
 
 
 const activityPassword =
@@ -502,6 +595,80 @@ const activityTitle =
     document.getElementById(
         "activityTitle"
     );
+
+const activityCategory = document.getElementById("activityCategory");
+const activitySportsOptions = document.getElementById("activitySportsOptions");
+const activityCustomTagInput = document.getElementById("activityCustomTag");
+const activityCustomTags = document.getElementById("activityCustomTags");
+const activityAddCustomTag = document.getElementById("activityAddCustomTag");
+
+function activityTagInputs() {
+    return document.querySelectorAll('input[name="activityTag"]');
+}
+
+function selectedActivityTags() {
+    return Array.from(activityTagInputs())
+        .filter((input) => input.checked)
+        .map((input) => input.value);
+}
+
+function setActivityTags(tags = []) {
+    const builtInTags = new Set([
+        "アイスホッケー", "アメフト", "男子ラクロス", "女子ラクロス",
+        "準硬式野球", "硬式野球", "その他", "七大戦"
+    ]);
+    tags.filter((tag) => !builtInTags.has(tag))
+        .forEach((tag) => addCustomActivityTag(tag, false));
+    activityTagInputs().forEach((input) => {
+        input.checked = tags.includes(input.value);
+    });
+}
+
+function addCustomActivityTag(tag, selected = true) {
+    if (!activityCustomTags || !tag) return;
+    const normalizedTag = tag.trim().replace(/\s+/g, " ");
+    if (!normalizedTag || normalizedTag.length > 30) return;
+    let input = Array.from(activityTagInputs()).find((item) => item.value === normalizedTag);
+    if (!input) {
+        const label = document.createElement("label");
+        input = document.createElement("input");
+        input.type = "checkbox";
+        input.name = "activityTag";
+        input.value = normalizedTag;
+        label.append(input, document.createTextNode(normalizedTag));
+        activityCustomTags.appendChild(label);
+    }
+    input.checked = selected;
+    addActivityTagFilter(normalizedTag);
+}
+
+if (activityAddCustomTag && activityCustomTagInput) {
+    activityAddCustomTag.addEventListener("click", () => {
+        const tag = activityCustomTagInput.value.trim();
+        if (!tag) return;
+        if (Array.from(activityTagInputs()).some((input) => input.value === tag)) {
+            activityPublishMessage.textContent = "既存のラベルです。チェックボックスから選択してください。";
+            return;
+        }
+        addCustomActivityTag(tag);
+        activityCustomTagInput.value = "";
+    });
+}
+
+function updateActivityTagVisibility() {
+    if (!activitySportsOptions || !activityCategory) return;
+    const showSports = activityCategory.value === "試合応援";
+    activitySportsOptions.hidden = !showSports;
+    if (!showSports) {
+        activitySportsOptions.querySelectorAll('input[name="activityTag"]')
+            .forEach((input) => { input.checked = false; });
+    }
+}
+
+if (activityCategory) {
+    activityCategory.addEventListener("change", updateActivityTagVisibility);
+    updateActivityTagVisibility();
+}
 
 
 const activityThumbnailFile =
@@ -546,9 +713,6 @@ const activityAdminReports =
     );
 
 
-// ============================================================
-// 活動報告の読み込み
-// ============================================================
 
 async function loadActivityReports() {
 
@@ -570,18 +734,18 @@ async function loadActivityReports() {
 
     try {
 
-        const result =
-            await supabaseClient
+        let result = await supabaseClient
+            .from("activity_reports")
+            .select("id, created_at, title, thumbnail, body, category, tags")
+            .order("created_at", { ascending: false });
+
+        // Keep older installations readable until the category migration is applied.
+        if (isActivityMetadataColumnError(result.error)) {
+            result = await supabaseClient
                 .from("activity_reports")
-                .select(
-                    "id, created_at, title, thumbnail, body"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+                .select("id, created_at, title, thumbnail, body")
+                .order("created_at", { ascending: false });
+        }
 
 
         const data =
@@ -606,54 +770,25 @@ async function loadActivityReports() {
         }
 
 
-        activityReports.innerHTML =
-            "";
-
-
         if (
             !data ||
             data.length === 0
         ) {
-
+            allActivityReports = [];
             activityReports.innerHTML = `
                 <div class="activity-report-empty">
-
-                    <span aria-hidden="true">
-                        66
-                    </span>
-
-                    <p>
-                        団全体の活動報告を、
-                        こちらに掲載していきます。
-                    </p>
-
-                    <p>
-                        現在、掲載内容を準備しています。
-                    </p>
-
-                </div>
-            `;
-
+                    <span aria-hidden="true">66</span>
+                    <p>団全体の活動報告を、こちらに掲載していきます。</p>
+                    <p>現在、掲載内容を準備しています。</p>
+                </div>`;
             return;
-
         }
 
-
-        data.forEach(
-            function (report) {
-
-                const article =
-                    createActivityArticle(
-                        report
-                    );
-
-
-                activityReports.appendChild(
-                    article
-                );
-
-            }
-        );
+        allActivityReports = data;
+        data.forEach((report) => {
+            (Array.isArray(report.tags) ? report.tags : []).forEach(addActivityTagFilter);
+        });
+        renderFilteredActivityReports();
 
     } catch (error) {
 
@@ -669,9 +804,6 @@ async function loadActivityReports() {
 }
 
 
-// ============================================================
-// 活動報告の記事HTMLを作る
-// ============================================================
 
 function createActivityArticle(report) {
 
@@ -765,6 +897,19 @@ function createActivityArticle(report) {
         date
     );
 
+    const labels = [report.category, ...(Array.isArray(report.tags) ? report.tags : [])]
+        .filter(Boolean);
+    if (labels.length) {
+        const labelList = document.createElement("ul");
+        labelList.className = "activity-report-labels";
+        labels.forEach((label) => {
+            const item = document.createElement("li");
+            item.textContent = label;
+            labelList.appendChild(item);
+        });
+        content.appendChild(labelList);
+    }
+
 
     const title =
         document.createElement(
@@ -812,9 +957,6 @@ function createActivityArticle(report) {
 }
 
 
-// ============================================================
-// エラー表示
-// ============================================================
 
 function showActivityError() {
 
@@ -844,9 +986,6 @@ function showActivityError() {
 }
 
 
-// ============================================================
-// 編集ボタン
-// ============================================================
 
 if (
     editActivityButton &&
@@ -855,7 +994,7 @@ if (
 
     editActivityButton.addEventListener(
         "click",
-        function () {
+        async function () {
 
             activityAdminOverlay.classList.add(
                 "open"
@@ -886,13 +1025,18 @@ if (
             }
 
 
-            if (activityPassword) {
-
-                activityPassword.value =
-                    "";
-
-                activityPassword.focus();
-
+            if (activityPassword) activityPassword.value = "";
+            if (activityEmail) activityEmail.value = "";
+            try {
+                if (await isSiteAdmin()) {
+                    activityPasswordArea.style.display = "none";
+                    activityEditorArea.style.display = "block";
+                    await loadAdminActivityReports();
+                } else if (activityEmail) {
+                    activityEmail.focus();
+                }
+            } catch (error) {
+                activityPasswordError.textContent = `管理者確認に失敗しました: ${error.message}`;
             }
 
         }
@@ -901,9 +1045,6 @@ if (
 }
 
 
-// ============================================================
-// 管理画面を閉じる
-// ============================================================
 
 if (activityAdminClose) {
 
@@ -919,9 +1060,6 @@ if (activityAdminClose) {
 }
 
 
-// ============================================================
-// 背景クリックで閉じる
-// ============================================================
 
 if (activityAdminOverlay) {
 
@@ -944,9 +1082,6 @@ if (activityAdminOverlay) {
 }
 
 
-// ============================================================
-// 管理画面を閉じる関数
-// ============================================================
 
 function closeActivityAdmin() {
 
@@ -965,29 +1100,24 @@ function closeActivityAdmin() {
 }
 
 
-// ============================================================
-// 管理者パスワード認証
-// ============================================================
 
 if (activityPasswordButton) {
 
     activityPasswordButton.addEventListener(
         "click",
         async function () {
-            const password =
-                activityPassword
-                    .value;
-
-            if (password === ACTIVITY_ADMIN_PASSWORD) {
+            try {
+                await signInSiteAdmin(activityEmail.value.trim(), activityPassword.value);
                 activityPasswordError.textContent = "";
                 activityPasswordArea.style.display = "none";
                 activityEditorArea.style.display = "block";
                 activityPassword.value = "";
+                activityEmail.value = "";
                 await loadAdminActivityReports();
-            } else {
-                activityPasswordError.textContent = "パスワードが違います。";
+            } catch (error) {
+                activityPasswordError.textContent = error.message || "ログインできませんでした。";
                 activityPassword.value = "";
-                activityPassword.focus();
+                activityEmail.focus();
             }
 
         }
@@ -996,9 +1126,6 @@ if (activityPasswordButton) {
 }
 
 
-// ============================================================
-// Enterキーでもログイン
-// ============================================================
 
 if (activityPassword) {
 
@@ -1027,9 +1154,6 @@ if (activityPassword) {
 }
 
 
-// ============================================================
-// 管理画面の記事一覧
-// ============================================================
 
 async function loadAdminActivityReports() {
 
@@ -1054,18 +1178,17 @@ async function loadAdminActivityReports() {
 
     try {
 
-        const result =
-            await supabaseClient
+        let result = await supabaseClient
+            .from("activity_reports")
+            .select("id, created_at, title, thumbnail, body, category, tags")
+            .order("created_at", { ascending: false });
+
+        if (isActivityMetadataColumnError(result.error)) {
+            result = await supabaseClient
                 .from("activity_reports")
-                .select(
-                    "id, created_at, title, thumbnail, body"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+                .select("id, created_at, title, thumbnail, body")
+                .order("created_at", { ascending: false });
+        }
 
 
         const data =
@@ -1136,10 +1259,21 @@ async function loadAdminActivityReports() {
                     report.title ||
                     "無題";
 
-
                 item.appendChild(
                     title
                 );
+
+                const labels = [report.category, ...(Array.isArray(report.tags) ? report.tags : [])]
+                    .filter(Boolean);
+                if (labels.length) {
+                    const metadata = document.createElement("small");
+                    metadata.className = "activity-admin-report-labels";
+                    metadata.textContent = labels.join(" / ");
+                    item.appendChild(metadata);
+                }
+
+                const actions = document.createElement("div");
+                actions.className = "activity-report-admin-actions";
 
 
                 const editButton =
@@ -1172,7 +1306,7 @@ async function loadAdminActivityReports() {
                 );
 
 
-                item.appendChild(
+                actions.appendChild(
                     editButton
                 );
 
@@ -1207,9 +1341,11 @@ async function loadAdminActivityReports() {
                 );
 
 
-                item.appendChild(
+                actions.appendChild(
                     deleteButton
                 );
+
+                item.appendChild(actions);
 
 
                 activityAdminReports.appendChild(
@@ -1234,9 +1370,6 @@ async function loadAdminActivityReports() {
 }
 
 
-// ============================================================
-// 記事編集開始
-// ============================================================
 
 function startActivityEdit(report) {
 
@@ -1257,6 +1390,12 @@ function startActivityEdit(report) {
     activityBody.value =
         report.body ||
         "";
+
+    if (activityCategory) {
+        activityCategory.value = report.category || "演舞演奏会";
+        updateActivityTagVisibility();
+    }
+    setActivityTags(Array.isArray(report.tags) ? report.tags : []);
 
 
     activityThumbnailFile.value =
@@ -1286,9 +1425,6 @@ function startActivityEdit(report) {
 }
 
 
-// ============================================================
-// 編集キャンセル
-// ============================================================
 
 if (activityCancelEditButton) {
 
@@ -1304,9 +1440,6 @@ if (activityCancelEditButton) {
 }
 
 
-// ============================================================
-// 編集状態をリセット
-// ============================================================
 
 function resetActivityEditor() {
 
@@ -1331,6 +1464,12 @@ function resetActivityEditor() {
     if (activityBody) {
         activityBody.value = "";
     }
+
+    if (activityCategory) {
+        activityCategory.value = "演舞演奏会";
+        updateActivityTagVisibility();
+    }
+    setActivityTags([]);
 
 
     if (activityThumbnailFile) {
@@ -1369,9 +1508,6 @@ function resetActivityEditor() {
 }
 
 
-// ============================================================
-// 画像選択
-// ============================================================
 
 if (activityThumbnailFile) {
 
@@ -1436,9 +1572,6 @@ if (activityThumbnailFile) {
 }
 
 
-// ============================================================
-// 新規追加・編集保存
-// ============================================================
 
 if (activityPublishButton) {
 
@@ -1452,6 +1585,9 @@ if (activityPublishButton) {
 
             const body =
                 activityBody.value.trim();
+
+            const category = activityCategory ? activityCategory.value : "演舞演奏会";
+            const tags = selectedActivityTags();
 
 
             const imageFile =
@@ -1508,9 +1644,6 @@ if (activityPublishButton) {
                     null;
 
 
-                // =========================
-                // 画像アップロード
-                // =========================
 
                 if (imageFile) {
 
@@ -1616,9 +1749,6 @@ if (activityPublishButton) {
                 }
 
 
-                // =========================
-                // 編集
-                // =========================
 
                 if (editingId) {
 
@@ -1637,6 +1767,10 @@ if (activityPublishButton) {
                                 {
                                     title:
                                         title,
+
+                                    category,
+
+                                    tags,
 
                                     thumbnail:
                                         finalThumbnail,
@@ -1662,7 +1796,9 @@ if (activityPublishButton) {
 
 
                         activityPublishMessage.textContent =
-                            `変更を保存できませんでした: ${result.error.message}`;
+                            isActivityMetadataColumnError(result.error)
+                                ? "分類・ラベル用の列がまだありません。supabase/activity_report_categories.sql をSupabase SQL Editorで実行してください。"
+                                : `変更を保存できませんでした: ${result.error.message}`;
 
                         return;
 
@@ -1685,9 +1821,6 @@ if (activityPublishButton) {
 
                 } else {
 
-                    // =========================
-                    // 新規追加
-                    // =========================
 
                     const result =
                         await supabaseClient
@@ -1699,6 +1832,10 @@ if (activityPublishButton) {
                                     {
                                         title:
                                             title,
+
+                                        category,
+
+                                        tags,
 
                                         thumbnail:
                                             thumbnailUrl,
@@ -1719,7 +1856,9 @@ if (activityPublishButton) {
 
 
                         activityPublishMessage.textContent =
-                            "記事の公開に失敗しました。";
+                            isActivityMetadataColumnError(result.error)
+                                ? "分類・ラベル用の列がまだありません。supabase/activity_report_categories.sql をSupabase SQL Editorで実行してください。"
+                                : `記事の公開に失敗しました: ${result.error.message}`;
 
                         return;
 
@@ -1765,9 +1904,6 @@ if (activityPublishButton) {
 }
 
 
-// ============================================================
-// 記事削除
-// ============================================================
 
 async function deleteActivityReport(id) {
 
@@ -1852,9 +1988,6 @@ async function deleteActivityReport(id) {
 }
 
 
-// ============================================================
-// ACTIVITYページなら記事を読み込む
-// ============================================================
 
 if (activityReports) {
 
@@ -1862,8 +1995,31 @@ if (activityReports) {
 
 }
 
+if (activityEmail) {
+    activityEmail.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            activityPassword.focus();
+        }
+    });
+}
 
-// ABOUT配下のページを開閉
+const activityAdminLogout = document.getElementById("activityAdminLogout");
+if (activityAdminLogout) {
+    activityAdminLogout.addEventListener("click", async () => {
+        try {
+            await signOutSiteAdmin();
+            activityEditorArea.style.display = "none";
+            activityPasswordArea.style.display = "block";
+            activityPasswordError.textContent = "ログアウトしました。";
+            if (activityEmail) activityEmail.focus();
+        } catch (error) {
+            activityPasswordError.textContent = `ログアウトできませんでした: ${error.message}`;
+        }
+    });
+}
+
+
 const aboutSubmenuToggle =
     document.querySelector(".menu-submenu-toggle");
 
@@ -1903,7 +2059,6 @@ if (aboutSubmenuToggle) {
 }
 
 
-// 高校生・新入生向け企画ページ
 const welcomePosts = document.getElementById("welcomePosts");
 if (welcomePosts) {
     const overlay = document.getElementById("welcomeAdminOverlay");
@@ -1911,6 +2066,7 @@ if (welcomePosts) {
     const closeButton = document.getElementById("welcomeAdminClose");
     const passwordArea = document.getElementById("welcomePasswordArea");
     const passwordInput = document.getElementById("welcomePassword");
+    const emailInput = document.getElementById("welcomeEmail");
     const passwordButton = document.getElementById("welcomePasswordButton");
     const passwordError = document.getElementById("welcomePasswordError");
     const editorArea = document.getElementById("welcomeEditorArea");
@@ -1924,6 +2080,7 @@ if (welcomePosts) {
     const cancelEditButton = document.getElementById("welcomeCancelEdit");
     const saveMessage = document.getElementById("welcomeSaveMessage");
     const adminPosts = document.getElementById("welcomeAdminPosts");
+    const logoutButton = document.getElementById("welcomeAdminLogout");
     let cachedPosts = [];
 
     function formatWelcomeDate(value) {
@@ -1972,7 +2129,6 @@ if (welcomePosts) {
                     article.appendChild(link);
                 }
             } catch (_) {
-                // 不正なURLはページ上にリンクとして表示しない。
             }
         }
 
@@ -2070,20 +2226,32 @@ if (welcomePosts) {
         saveMessage.textContent = "";
     }
 
-    openButton.addEventListener("click", () => {
+    openButton.addEventListener("click", async () => {
         overlay.classList.add("open");
         overlay.setAttribute("aria-hidden", "false");
         passwordArea.hidden = false;
         editorArea.hidden = true;
         passwordInput.value = "";
+        emailInput.value = "";
         passwordError.textContent = "";
-        passwordInput.focus();
+        try {
+            if (await isSiteAdmin()) {
+                passwordArea.hidden = true;
+                editorArea.hidden = false;
+                await loadWelcomePosts();
+            } else {
+                emailInput.focus();
+            }
+        } catch (error) {
+            passwordError.textContent = `管理者確認に失敗しました: ${error.message}`;
+        }
     });
 
     closeButton.addEventListener("click", () => {
         overlay.classList.remove("open");
         overlay.setAttribute("aria-hidden", "true");
         passwordInput.value = "";
+        emailInput.value = "";
         resetWelcomeForm();
     });
 
@@ -2091,17 +2259,38 @@ if (welcomePosts) {
         if (event.target === overlay) closeButton.click();
     });
 
-    passwordButton.addEventListener("click", () => {
-        if (passwordInput.value === ACTIVITY_ADMIN_PASSWORD) {
+    passwordButton.addEventListener("click", async () => {
+        try {
+            await signInSiteAdmin(emailInput.value.trim(), passwordInput.value);
             passwordError.textContent = "";
             passwordArea.hidden = true;
             editorArea.hidden = false;
             passwordInput.value = "";
+            emailInput.value = "";
             renderWelcomeAdminPosts();
-        } else {
-            passwordError.textContent = "パスワードが違います。";
+        } catch (error) {
+            passwordError.textContent = error.message || "ログインできませんでした。";
             passwordInput.value = "";
+            emailInput.focus();
+        }
+    });
+
+    emailInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
             passwordInput.focus();
+        }
+    });
+
+    logoutButton.addEventListener("click", async () => {
+        try {
+            await signOutSiteAdmin();
+            editorArea.hidden = true;
+            passwordArea.hidden = false;
+            passwordError.textContent = "ログアウトしました。";
+            emailInput.focus();
+        } catch (error) {
+            saveMessage.textContent = `ログアウトできませんでした: ${error.message}`;
         }
     });
 
