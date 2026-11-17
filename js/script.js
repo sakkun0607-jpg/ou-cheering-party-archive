@@ -489,7 +489,7 @@ function renderFilteredActivityReports() {
         : allActivityReports.filter((report) => {
             const categoryMatches = selectedCategories.length === 0 || selectedCategories.includes(report.category);
             const tags = Array.isArray(report.tags) ? report.tags : [];
-            const tagsMatch = selectedTags.length === 0 || selectedTags.some((tag) => tags.includes(tag));
+            const tagsMatch = selectedTags.length === 0 || selectedTags.every((tag) => tags.includes(tag));
             return categoryMatches && tagsMatch;
         });
 
