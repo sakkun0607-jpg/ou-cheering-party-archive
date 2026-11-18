@@ -5107,6 +5107,10 @@ body.member-modal-open {
 }
 
 @media (max-width: 760px) {
+    .home-part-panel.part-leader .home-part-background {
+        background-image: url("../images/leader3-l.jpg");
+    }
+
     .parts > .section-label {
         padding: 4rem var(--page-gutter) 0.75rem;
     }
