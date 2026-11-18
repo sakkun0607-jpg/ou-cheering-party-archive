@@ -4953,6 +4953,7 @@ body.member-modal-open {
     overflow: hidden;
     border: 6px solid #0a1b36;
     background: #0a1b36;
+    margin-bottom: 39px;
 }
 
 .home-part-panel {
@@ -5457,6 +5458,16 @@ body.member-modal-open {
     border-color: #999999;
 }
 
+.activity-report-pin-badge {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    border: 1px solid #b8aa83;
+    color: #655522;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+}
+
 .activity-report-labels {
     display: flex;
     flex-wrap: wrap;
@@ -5528,6 +5539,16 @@ body.member-modal-open {
     border-color: #8a3333 !important;
     background: #8a3333;
     color: #fff;
+}
+
+.activity-admin-panel .activity-report-admin-actions .activity-report-pin-button[aria-pressed="true"] {
+    border-color: #927928;
+    background: #927928;
+}
+
+.activity-admin-panel .activity-report-admin-actions .activity-report-pin-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
 }
 
 .activity-tag-picker {

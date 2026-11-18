@@ -66,6 +66,11 @@ function isActivityMetadataColumnError(error) {
         /column .*?(category|tags)|schema cache/i.test(error?.message || "");
 }
 
+function isActivityPinnedColumnError(error) {
+    return error?.code === "42703" || error?.code === "PGRST204" ||
+        /column .*?is_pinned|schema cache/i.test(error?.message || "");
+}
+
 
 
 const menuButton =
@@ -736,8 +741,15 @@ async function loadActivityReports() {
 
         let result = await supabaseClient
             .from("activity_reports")
-            .select("id, created_at, title, thumbnail, body, category, tags")
+            .select("id, created_at, title, thumbnail, body, category, tags, is_pinned")
             .order("created_at", { ascending: false });
+
+        if (isActivityPinnedColumnError(result.error)) {
+            result = await supabaseClient
+                .from("activity_reports")
+                .select("id, created_at, title, thumbnail, body, category, tags")
+                .order("created_at", { ascending: false });
+        }
 
         // Keep older installations readable until the category migration is applied.
         if (isActivityMetadataColumnError(result.error)) {
@@ -784,7 +796,10 @@ async function loadActivityReports() {
             return;
         }
 
-        allActivityReports = data;
+        allActivityReports = data.sort((a, b) =>
+            Number(Boolean(b.is_pinned)) - Number(Boolean(a.is_pinned)) ||
+            new Date(b.created_at) - new Date(a.created_at)
+        );
         data.forEach((report) => {
             (Array.isArray(report.tags) ? report.tags : []).forEach(addActivityTagFilter);
         });
@@ -864,6 +879,13 @@ function createActivityArticle(report) {
 
     content.className =
         "activity-report-content";
+
+    if (report.is_pinned) {
+        const pinBadge = document.createElement("span");
+        pinBadge.className = "activity-report-pin-badge";
+        pinBadge.textContent = "ピン止め";
+        content.appendChild(pinBadge);
+    }
 
 
     const date =
@@ -1180,8 +1202,15 @@ async function loadAdminActivityReports() {
 
         let result = await supabaseClient
             .from("activity_reports")
-            .select("id, created_at, title, thumbnail, body, category, tags")
+            .select("id, created_at, title, thumbnail, body, category, tags, is_pinned")
             .order("created_at", { ascending: false });
+
+        if (isActivityPinnedColumnError(result.error)) {
+            result = await supabaseClient
+                .from("activity_reports")
+                .select("id, created_at, title, thumbnail, body, category, tags")
+                .order("created_at", { ascending: false });
+        }
 
         if (isActivityMetadataColumnError(result.error)) {
             result = await supabaseClient
@@ -1275,6 +1304,14 @@ async function loadAdminActivityReports() {
                 const actions = document.createElement("div");
                 actions.className = "activity-report-admin-actions";
 
+                const pinButton = document.createElement("button");
+                pinButton.type = "button";
+                pinButton.className = "activity-report-pin-button";
+                pinButton.textContent = report.is_pinned ? "ピン解除" : "ピン止め";
+                pinButton.setAttribute("aria-pressed", String(Boolean(report.is_pinned)));
+                pinButton.addEventListener("click", () => toggleActivityReportPin(report, pinButton));
+                actions.appendChild(pinButton);
+
 
                 const editButton =
                     document.createElement(
@@ -1367,6 +1404,44 @@ async function loadAdminActivityReports() {
 
     }
 
+}
+
+async function toggleActivityReportPin(report, button) {
+    if (!supabaseClient || !report || !button) return;
+    button.disabled = true;
+
+    try {
+        const nextPinnedState = !Boolean(report.is_pinned);
+        const { data, error } = await supabaseClient
+            .from("activity_reports")
+            .update({ is_pinned: nextPinnedState })
+            .eq("id", report.id)
+            .select("id")
+            .maybeSingle();
+
+        if (error) {
+            activityPublishMessage.textContent = isActivityPinnedColumnError(error)
+                ? "ピン止め用の列がありません。supabase/activity_report_pinned.sql をSupabase SQL Editorで実行してください。"
+                : `ピン止めを変更できませんでした: ${error.message}`;
+            button.disabled = false;
+            return;
+        }
+
+        if (!data) {
+            activityPublishMessage.textContent = "ピン止めを変更できませんでした。Supabaseのactivity_reports更新ポリシーを確認してください。";
+            button.disabled = false;
+            return;
+        }
+
+        activityPublishMessage.textContent = nextPinnedState
+            ? "活動報告をピン止めしました。"
+            : "活動報告のピン止めを解除しました。";
+        await loadActivityReports();
+        await loadAdminActivityReports();
+    } catch (error) {
+        activityPublishMessage.textContent = `ピン止めを変更できませんでした: ${error.message || error}`;
+        button.disabled = false;
+    }
 }
 
 
