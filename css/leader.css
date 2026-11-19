@@ -134,12 +134,24 @@
     overflow: hidden;
 }
 
+.leader-message-portrait {
+    width: 100%;
+}
+
 .leader-message-photo img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center 35%;
+}
+
+.leader-message-caption {
+    margin: 14px 0 0;
+    text-align: center;
+    line-height: 1.8;
+    font-size: clamp(14px, 1.4vw, 17px);
+    letter-spacing: 0.04em;
 }
 
 .leader-message-photo span {
