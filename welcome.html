@@ -88,6 +88,21 @@
                     <input id="welcomeDate" type="date">
                     <label for="welcomeLocation">場所</label>
                     <input id="welcomeLocation" type="text" maxlength="160" placeholder="例：豊中キャンパス">
+                    <label for="welcomeMapImage">会場の地図画像（任意）</label>
+                    <input id="welcomeMapImage" type="file" accept="image/*">
+                    <p class="welcome-form-hint">集合場所が分かる地図やキャンパス案内を追加できます（10MB以下）。</p>
+                    <div id="welcomeMapCurrent" class="welcome-map-preview" hidden>
+                        <p>現在登録されている地図</p>
+                        <img id="welcomeMapCurrentImage" alt="現在登録されている地図">
+                    </div>
+                    <label id="welcomeMapRemoveLabel" class="welcome-map-remove" hidden>
+                        <input id="welcomeMapRemove" type="checkbox">
+                        登録済みの地図画像を外す
+                    </label>
+                    <div id="welcomeMapPreviewWrap" class="welcome-map-preview" hidden>
+                        <p>選択中の地図</p>
+                        <img id="welcomeMapPreview" alt="選択中の地図">
+                    </div>
                     <label for="welcomeBody">内容</label>
                     <textarea id="welcomeBody" rows="6" maxlength="5000" required></textarea>
                     <label for="welcomeUrl">詳細ページ（任意）</label>

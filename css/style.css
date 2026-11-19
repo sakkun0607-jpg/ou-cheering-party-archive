@@ -719,6 +719,24 @@ h3,
     overflow-wrap: anywhere;
 }
 
+.welcome-post-map {
+    margin: 1.25rem 0 0;
+}
+
+.welcome-post-map figcaption {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.welcome-post-map img {
+    display: block;
+    width: 100%;
+    max-height: 34rem;
+    object-fit: contain;
+    object-position: left center;
+    background: #f4f2ed;
+}
+
 .welcome-admin {
     padding: 0 var(--page-gutter, 10%) 4rem;
     text-align: right;
@@ -793,6 +811,59 @@ h3,
 
 .welcome-admin-panel textarea {
     resize: vertical;
+}
+
+.welcome-admin-panel input[type="file"] {
+    padding: 0.55rem;
+}
+
+.welcome-form-hint {
+    margin: -0.6rem 0 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.welcome-map-preview {
+    margin: 0 0 1rem;
+}
+
+.welcome-map-preview[hidden],
+.welcome-map-remove[hidden] {
+    display: none;
+}
+
+.welcome-map-preview p {
+    margin: 0 0 0.4rem;
+    font-weight: 700;
+}
+
+.welcome-map-preview img {
+    display: block;
+    width: min(100%, 28rem);
+    max-height: 18rem;
+    object-fit: contain;
+    object-position: left center;
+    border: 1px solid #d5d0c4;
+    background: #f4f2ed;
+}
+
+.welcome-map-remove {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 1rem;
+    font-weight: 400 !important;
+}
+
+.welcome-admin-panel .welcome-map-remove[hidden] {
+    display: none;
+}
+
+.welcome-admin-panel .welcome-map-remove input {
+    display: inline-block;
+    width: auto;
+    margin: 0;
 }
 
 .welcome-admin-panel label {

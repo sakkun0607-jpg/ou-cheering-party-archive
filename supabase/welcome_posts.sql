@@ -5,8 +5,12 @@ create table if not exists public.welcome_posts (
     location text,
     body text not null,
     details_url text,
+    map_image_url text,
     created_at timestamptz not null default now()
 );
+
+alter table public.welcome_posts
+    add column if not exists map_image_url text;
 
 create table if not exists public.site_admins (
     user_id uuid primary key references auth.users(id) on delete cascade,

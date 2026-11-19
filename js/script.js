@@ -2149,6 +2149,13 @@ if (welcomePosts) {
     const titleInput = document.getElementById("welcomeTitle");
     const dateInput = document.getElementById("welcomeDate");
     const locationInput = document.getElementById("welcomeLocation");
+    const mapImageInput = document.getElementById("welcomeMapImage");
+    const mapCurrent = document.getElementById("welcomeMapCurrent");
+    const mapCurrentImage = document.getElementById("welcomeMapCurrentImage");
+    const mapRemoveLabel = document.getElementById("welcomeMapRemoveLabel");
+    const mapRemoveInput = document.getElementById("welcomeMapRemove");
+    const mapPreviewWrap = document.getElementById("welcomeMapPreviewWrap");
+    const mapPreviewImage = document.getElementById("welcomeMapPreview");
     const bodyInput = document.getElementById("welcomeBody");
     const urlInput = document.getElementById("welcomeUrl");
     const saveButton = document.getElementById("welcomeSaveButton");
@@ -2157,6 +2164,7 @@ if (welcomePosts) {
     const adminPosts = document.getElementById("welcomeAdminPosts");
     const logoutButton = document.getElementById("welcomeAdminLogout");
     let cachedPosts = [];
+    let mapPreviewObjectUrl = "";
 
     function formatWelcomeDate(value) {
         if (!value) return "日程調整中";
@@ -2184,6 +2192,26 @@ if (welcomePosts) {
             location.className = "welcome-post-location";
             location.textContent = post.location;
             article.appendChild(location);
+        }
+
+        if (post.map_image_url) {
+            try {
+                const mapUrl = new URL(post.map_image_url);
+                if (mapUrl.protocol === "https:" || mapUrl.protocol === "http:") {
+                    const map = document.createElement("figure");
+                    map.className = "welcome-post-map";
+                    const caption = document.createElement("figcaption");
+                    caption.textContent = "会場の地図";
+                    const image = document.createElement("img");
+                    image.src = mapUrl.href;
+                    image.alt = `${post.title || "企画"}の会場地図`;
+                    image.loading = "lazy";
+                    image.decoding = "async";
+                    map.append(caption, image);
+                    article.appendChild(map);
+                }
+            } catch (_) {
+            }
         }
 
         const body = document.createElement("p");
@@ -2219,7 +2247,7 @@ if (welcomePosts) {
         welcomePosts.innerHTML = '<p class="welcome-empty">企画情報を読み込んでいます。</p>';
         const { data, error } = await supabaseClient
             .from("welcome_posts")
-            .select("id, title, event_date, location, body, details_url, created_at")
+            .select("id, title, event_date, location, body, details_url, map_image_url, created_at")
             .order("created_at", { ascending: false });
 
         if (error) {
@@ -2260,10 +2288,19 @@ if (welcomePosts) {
             edit.type = "button";
             edit.textContent = "編集";
             edit.addEventListener("click", () => {
+                if (mapPreviewObjectUrl) URL.revokeObjectURL(mapPreviewObjectUrl);
+                mapPreviewObjectUrl = "";
                 form.dataset.editingId = post.id;
                 titleInput.value = post.title || "";
                 dateInput.value = post.event_date || "";
                 locationInput.value = post.location || "";
+                mapImageInput.value = "";
+                mapRemoveInput.checked = false;
+                mapPreviewWrap.hidden = true;
+                mapPreviewImage.removeAttribute("src");
+                mapCurrent.hidden = !post.map_image_url;
+                mapRemoveLabel.hidden = !post.map_image_url;
+                if (post.map_image_url) mapCurrentImage.src = post.map_image_url;
                 bodyInput.value = post.body || "";
                 urlInput.value = post.details_url || "";
                 saveButton.textContent = "変更を保存";
@@ -2296,6 +2333,15 @@ if (welcomePosts) {
     function resetWelcomeForm() {
         form.reset();
         form.dataset.editingId = "";
+        mapImageInput.value = "";
+        mapRemoveInput.checked = false;
+        mapCurrent.hidden = true;
+        mapRemoveLabel.hidden = true;
+        mapCurrentImage.removeAttribute("src");
+        if (mapPreviewObjectUrl) URL.revokeObjectURL(mapPreviewObjectUrl);
+        mapPreviewObjectUrl = "";
+        mapPreviewWrap.hidden = true;
+        mapPreviewImage.removeAttribute("src");
         saveButton.textContent = "投稿する";
         cancelEditButton.hidden = true;
         saveMessage.textContent = "";
@@ -2378,6 +2424,32 @@ if (welcomePosts) {
 
     cancelEditButton.addEventListener("click", resetWelcomeForm);
 
+    mapImageInput.addEventListener("change", () => {
+        const file = mapImageInput.files?.[0];
+        if (mapPreviewObjectUrl) URL.revokeObjectURL(mapPreviewObjectUrl);
+        mapPreviewObjectUrl = "";
+        mapPreviewWrap.hidden = true;
+        mapPreviewImage.removeAttribute("src");
+
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            saveMessage.textContent = "画像ファイルを選択してください。";
+            mapImageInput.value = "";
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            saveMessage.textContent = "地図画像は10MB以下にしてください。";
+            mapImageInput.value = "";
+            return;
+        }
+
+        mapRemoveInput.checked = false;
+        mapPreviewObjectUrl = URL.createObjectURL(file);
+        mapPreviewImage.src = mapPreviewObjectUrl;
+        mapPreviewWrap.hidden = false;
+        saveMessage.textContent = "";
+    });
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!supabaseClient) {
@@ -2385,18 +2457,52 @@ if (welcomePosts) {
             return;
         }
 
+        const editingId = form.dataset.editingId || "";
+        const existingPost = cachedPosts.find((item) => item.id === editingId);
+        const mapImageFile = mapImageInput.files?.[0];
+        let mapImageUrl = mapRemoveInput.checked
+            ? null
+            : existingPost?.map_image_url || null;
         const post = {
             title: titleInput.value.trim(),
             event_date: dateInput.value || null,
             location: locationInput.value.trim() || null,
             body: bodyInput.value.trim(),
-            details_url: urlInput.value.trim() || null
+            details_url: urlInput.value.trim() || null,
+            map_image_url: mapImageUrl
         };
-        const editingId = form.dataset.editingId || "";
         saveButton.disabled = true;
         saveMessage.textContent = editingId ? "変更を保存しています……" : "企画を投稿しています……";
 
         try {
+            if (mapImageFile) {
+                if (!mapImageFile.type.startsWith("image/")) {
+                    saveMessage.textContent = "画像ファイルを選択してください。";
+                    return;
+                }
+                if (mapImageFile.size > 10 * 1024 * 1024) {
+                    saveMessage.textContent = "地図画像は10MB以下にしてください。";
+                    return;
+                }
+
+                saveMessage.textContent = "地図画像をアップロードしています……";
+                const extension = mapImageFile.name.split(".").pop().toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+                const fileName = `welcome-${Date.now()}-${crypto.randomUUID()}.${extension}`;
+                const { error: uploadError } = await supabaseClient
+                    .storage
+                    .from("activity-images")
+                    .upload(fileName, mapImageFile, { cacheControl: "3600", upsert: false });
+
+                if (uploadError) throw uploadError;
+                mapImageUrl = supabaseClient
+                    .storage
+                    .from("activity-images")
+                    .getPublicUrl(fileName)
+                    .data
+                    .publicUrl;
+                post.map_image_url = mapImageUrl;
+            }
+
             const result = editingId
                 ? await supabaseClient.from("welcome_posts").update(post).eq("id", editingId).select("id").maybeSingle()
                 : await supabaseClient.from("welcome_posts").insert(post).select("id").single();
