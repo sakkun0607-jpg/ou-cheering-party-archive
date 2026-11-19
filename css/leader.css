@@ -87,7 +87,13 @@
 
 .leader-greeting {
     padding: 110px 12%;
-    background: #ffffff;
+    background-color: #ffffff;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)),
+        url("../images/honoo.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: #111111;
 }
 
