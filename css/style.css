@@ -2451,6 +2451,7 @@ body {
 
     letter-spacing: 0.12em;
 
+    -webkit-mix-blend-mode: difference;
     mix-blend-mode: difference;
 
     transition: opacity 0.2s ease;
