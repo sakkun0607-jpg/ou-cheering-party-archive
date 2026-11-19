@@ -2149,6 +2149,7 @@ if (welcomePosts) {
     const titleInput = document.getElementById("welcomeTitle");
     const dateInput = document.getElementById("welcomeDate");
     const locationInput = document.getElementById("welcomeLocation");
+    const mapEmbedUrlInput = document.getElementById("welcomeMapEmbedUrl");
     const bodyInput = document.getElementById("welcomeBody");
     const urlInput = document.getElementById("welcomeUrl");
     const saveButton = document.getElementById("welcomeSaveButton");
@@ -2157,6 +2158,23 @@ if (welcomePosts) {
     const adminPosts = document.getElementById("welcomeAdminPosts");
     const logoutButton = document.getElementById("welcomeAdminLogout");
     let cachedPosts = [];
+
+    function getGoogleMapsEmbedUrl(value) {
+        if (!value) return null;
+        try {
+            const url = new URL(value);
+            const allowedHosts = ["www.google.com", "maps.google.com"];
+            if (
+                url.protocol === "https:" &&
+                allowedHosts.includes(url.hostname) &&
+                url.pathname === "/maps/embed"
+            ) {
+                return url.href;
+            }
+        } catch (_) {
+        }
+        return null;
+    }
 
     function formatWelcomeDate(value) {
         if (!value) return "日程調整中";
@@ -2184,6 +2202,22 @@ if (welcomePosts) {
             location.className = "welcome-post-location";
             location.textContent = post.location;
             article.appendChild(location);
+        }
+
+        const mapEmbedUrl = getGoogleMapsEmbedUrl(post.map_embed_url);
+        if (mapEmbedUrl) {
+            const map = document.createElement("figure");
+            map.className = "welcome-post-map";
+            const caption = document.createElement("figcaption");
+            caption.textContent = "会場の地図";
+            const frame = document.createElement("iframe");
+            frame.src = mapEmbedUrl;
+            frame.title = `${post.title || "企画"}の会場地図`;
+            frame.loading = "lazy";
+            frame.referrerPolicy = "strict-origin-when-cross-origin";
+            frame.allowFullscreen = true;
+            map.append(caption, frame);
+            article.appendChild(map);
         }
 
         const body = document.createElement("p");
@@ -2219,7 +2253,7 @@ if (welcomePosts) {
         welcomePosts.innerHTML = '<p class="welcome-empty">企画情報を読み込んでいます。</p>';
         const { data, error } = await supabaseClient
             .from("welcome_posts")
-            .select("id, title, event_date, location, body, details_url, created_at")
+            .select("id, title, event_date, location, body, details_url, map_embed_url, created_at")
             .order("created_at", { ascending: false });
 
         if (error) {
@@ -2264,6 +2298,7 @@ if (welcomePosts) {
                 titleInput.value = post.title || "";
                 dateInput.value = post.event_date || "";
                 locationInput.value = post.location || "";
+                mapEmbedUrlInput.value = post.map_embed_url || "";
                 bodyInput.value = post.body || "";
                 urlInput.value = post.details_url || "";
                 saveButton.textContent = "変更を保存";
@@ -2296,6 +2331,7 @@ if (welcomePosts) {
     function resetWelcomeForm() {
         form.reset();
         form.dataset.editingId = "";
+        mapEmbedUrlInput.value = "";
         saveButton.textContent = "投稿する";
         cancelEditButton.hidden = true;
         saveMessage.textContent = "";
@@ -2385,14 +2421,22 @@ if (welcomePosts) {
             return;
         }
 
+        const editingId = form.dataset.editingId || "";
+        const mapEmbedInputValue = mapEmbedUrlInput.value.trim();
+        const mapEmbedUrl = getGoogleMapsEmbedUrl(mapEmbedInputValue);
+        if (mapEmbedInputValue && !mapEmbedUrl) {
+            saveMessage.textContent = "Googleマップの「地図を埋め込む」で表示されるURLを入力してください。";
+            mapEmbedUrlInput.focus();
+            return;
+        }
         const post = {
             title: titleInput.value.trim(),
             event_date: dateInput.value || null,
             location: locationInput.value.trim() || null,
             body: bodyInput.value.trim(),
-            details_url: urlInput.value.trim() || null
+            details_url: urlInput.value.trim() || null,
+            map_embed_url: mapEmbedUrl
         };
-        const editingId = form.dataset.editingId || "";
         saveButton.disabled = true;
         saveMessage.textContent = editingId ? "変更を保存しています……" : "企画を投稿しています……";
 
