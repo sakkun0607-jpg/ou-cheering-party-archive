@@ -89,7 +89,7 @@
     padding: 110px 12%;
     background-color: #ffffff;
     background-image:
-        linear-gradient(rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.88)),
+        linear-gradient(rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.78)),
         url("../images/honoo.jpg");
     background-size: cover;
     background-position: center;
@@ -124,6 +124,13 @@
     grid-template-columns: 0.8fr 1.2fr;
     gap: 60px;
     align-items: center;
+}
+
+.leader-greeting .leader-message {
+    padding: 0;
+    margin-bottom: 0;
+    background: transparent;
+    box-shadow: none;
 }
 
 .leader-message-photo {
