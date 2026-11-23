@@ -1,3 +1,11 @@
+const newcomerPageLink = document.createElement("a");
+newcomerPageLink.className = "site-newcomer-link";
+newcomerPageLink.href = "welcome.html";
+newcomerPageLink.innerHTML = '<span>新入生の方へ</span><span aria-hidden="true">↗</span>';
+newcomerPageLink.setAttribute("aria-label", "新入生・入団希望の皆様へのページへ");
+if (!window.location.pathname.endsWith("/welcome.html")) {
+    document.body.appendChild(newcomerPageLink);
+}
 
 const SUPABASE_URL =
     "https://minorohtjrqsjgpvrarj.supabase.co";
@@ -2150,6 +2158,12 @@ if (welcomePosts) {
     const dateInput = document.getElementById("welcomeDate");
     const locationInput = document.getElementById("welcomeLocation");
     const mapEmbedUrlInput = document.getElementById("welcomeMapEmbedUrl");
+    const calendarGrid = document.getElementById("welcomeCalendarGrid");
+    const calendarMonthLabel = document.getElementById("welcomeCalendarMonth");
+    const calendarStatus = document.getElementById("welcomeCalendarStatus");
+    const calendarPrevButton = document.getElementById("welcomeCalendarPrev");
+    const calendarNextButton = document.getElementById("welcomeCalendarNext");
+    const calendarAdminOpenButton = document.getElementById("welcomeCalendarAdminOpen");
     const bodyInput = document.getElementById("welcomeBody");
     const urlInput = document.getElementById("welcomeUrl");
     const saveButton = document.getElementById("welcomeSaveButton");
@@ -2158,6 +2172,94 @@ if (welcomePosts) {
     const adminPosts = document.getElementById("welcomeAdminPosts");
     const logoutButton = document.getElementById("welcomeAdminLogout");
     let cachedPosts = [];
+    const displayedCalendarMonth = new Date();
+    displayedCalendarMonth.setDate(1);
+
+    function formatDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    }
+
+    function renderWelcomeCalendar(posts) {
+        if (!calendarGrid || !calendarMonthLabel) return;
+
+        const year = displayedCalendarMonth.getFullYear();
+        const month = displayedCalendarMonth.getMonth();
+        calendarMonthLabel.textContent = displayedCalendarMonth.toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "long"
+        });
+        calendarGrid.replaceChildren();
+
+        const firstWeekday = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const cellCount = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+        const todayKey = formatDateKey(new Date());
+        let visibleEventCount = 0;
+
+        for (let index = 0; index < cellCount; index += 1) {
+            const date = new Date(year, month, index - firstWeekday + 1);
+            const dateKey = formatDateKey(date);
+            const dayPosts = posts.filter((post) => post.event_date === dateKey);
+            if (date.getMonth() === month) visibleEventCount += dayPosts.length;
+
+            const cell = document.createElement(dayPosts.length ? "button" : "div");
+            if (dayPosts.length) cell.type = "button";
+            cell.className = "welcome-calendar-day";
+            if (date.getMonth() !== month) cell.classList.add("is-outside-month");
+            if (dateKey === todayKey) cell.classList.add("is-today");
+
+            const dayNumber = document.createElement("span");
+            dayNumber.className = "welcome-calendar-day-number";
+            dayNumber.textContent = String(date.getDate());
+            cell.appendChild(dayNumber);
+
+            dayPosts.slice(0, 2).forEach((post) => {
+                const eventLabel = document.createElement("span");
+                eventLabel.className = "welcome-calendar-event";
+                eventLabel.textContent = post.title || "新歓企画";
+                cell.appendChild(eventLabel);
+            });
+            if (dayPosts.length > 2) {
+                const more = document.createElement("span");
+                more.className = "welcome-calendar-more";
+                more.textContent = `ほか${dayPosts.length - 2}件`;
+                cell.appendChild(more);
+            }
+
+            if (dayPosts.length) {
+                cell.setAttribute(
+                    "aria-label",
+                    `${date.toLocaleDateString("ja-JP", { month: "long", day: "numeric" })}：${dayPosts.map((post) => post.title).join("、")}`
+                );
+                cell.addEventListener("click", () => {
+                    const target = document.getElementById(`welcome-post-${dayPosts[0].id}`);
+                    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+                });
+            } else {
+                cell.setAttribute("aria-hidden", "true");
+            }
+            calendarGrid.appendChild(cell);
+        }
+
+        if (calendarStatus) {
+            calendarStatus.textContent = visibleEventCount
+                ? `この月の企画は${visibleEventCount}件です。日付を押すと企画内容を確認できます。`
+                : "この月に日程が決まっている企画はありません。前後の月もご確認ください。";
+        }
+    }
+
+    calendarPrevButton?.addEventListener("click", () => {
+        displayedCalendarMonth.setMonth(displayedCalendarMonth.getMonth() - 1);
+        renderWelcomeCalendar(cachedPosts);
+    });
+    calendarNextButton?.addEventListener("click", () => {
+        displayedCalendarMonth.setMonth(displayedCalendarMonth.getMonth() + 1);
+        renderWelcomeCalendar(cachedPosts);
+    });
+    calendarAdminOpenButton?.addEventListener("click", () => openButton.click());
 
     function getGoogleMapsEmbedUrl(value) {
         if (!value) return null;
@@ -2187,6 +2289,7 @@ if (welcomePosts) {
     function appendWelcomePost(container, post) {
         const article = document.createElement("article");
         article.className = "welcome-post-card";
+        article.id = `welcome-post-${post.id}`;
 
         const date = document.createElement("p");
         date.className = "welcome-post-date";
@@ -2247,6 +2350,7 @@ if (welcomePosts) {
     async function loadWelcomePosts() {
         if (!supabaseClient) {
             welcomePosts.innerHTML = '<p class="welcome-empty">お知らせを読み込めませんでした。</p>';
+            if (calendarStatus) calendarStatus.textContent = "企画日程を読み込めませんでした。";
             return;
         }
 
@@ -2259,11 +2363,13 @@ if (welcomePosts) {
         if (error) {
             console.error("新歓企画の取得に失敗しました:", error);
             welcomePosts.innerHTML = '<p class="welcome-empty">企画情報を読み込めませんでした。Supabaseのwelcome_posts設定をご確認ください。</p>';
+            if (calendarStatus) calendarStatus.textContent = "企画日程を読み込めませんでした。Supabaseの設定をご確認ください。";
             if (adminPosts) adminPosts.textContent = `読み込みエラー: ${error.message}`;
             return;
         }
 
         cachedPosts = data || [];
+        renderWelcomeCalendar(cachedPosts);
         welcomePosts.replaceChildren();
         if (cachedPosts.length === 0) {
             welcomePosts.innerHTML = '<p class="welcome-empty">新歓や見学・体験の企画情報を、こちらでお知らせします。</p>';

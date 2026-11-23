@@ -49,6 +49,27 @@
             </article>
         </section>
 
+        <section class="welcome-calendar-section" aria-labelledby="welcomeCalendarHeading">
+            <div class="welcome-calendar-heading">
+                <p class="section-label">SCHEDULE</p>
+                <h2 id="welcomeCalendarHeading">新歓カレンダー</h2>
+                <p>企画を管理画面から登録すると、開催日がカレンダーに表示されます。</p>
+            </div>
+            <div class="welcome-calendar" aria-label="新歓企画の日程">
+                <div class="welcome-calendar-toolbar">
+                    <button type="button" id="welcomeCalendarPrev" aria-label="前の月">‹</button>
+                    <h3 id="welcomeCalendarMonth" aria-live="polite"></h3>
+                    <button type="button" id="welcomeCalendarNext" aria-label="次の月">›</button>
+                </div>
+                <div class="welcome-calendar-weekdays" aria-hidden="true">
+                    <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+                </div>
+                <div id="welcomeCalendarGrid" class="welcome-calendar-grid" aria-labelledby="welcomeCalendarMonth"></div>
+                <p id="welcomeCalendarStatus" class="welcome-calendar-status" role="status" aria-live="polite"></p>
+                <button type="button" id="welcomeCalendarAdminOpen" class="welcome-calendar-admin-open">ログインして予定を編集</button>
+            </div>
+        </section>
+
         <section class="welcome-posts-section" id="welcomePostsSection" aria-labelledby="welcomePostsHeading">
             <div class="welcome-section-heading">
                 <p class="section-label">NEW STUDENT EVENTS</p>

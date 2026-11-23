@@ -9,6 +9,38 @@ body {
     font-family: sans-serif;
 }
 
+.site-newcomer-link {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.9rem 1.15rem;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 999px;
+    background: #20251f;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.site-newcomer-link:hover,
+.site-newcomer-link:focus-visible {
+    transform: translateY(-3px);
+    background: #343b32;
+}
+
+.site-newcomer-link:focus-visible {
+    outline: 3px solid #d4af37;
+    outline-offset: 3px;
+}
+
 
 
 header {
@@ -662,6 +694,166 @@ h3,
     line-height: 2;
 }
 
+.welcome-calendar-section {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+    align-items: start;
+    gap: clamp(2rem, 7vw, 6rem);
+    padding: clamp(4rem, 9vw, 7rem) var(--page-gutter, 10%);
+    background: #f4f2ed;
+}
+
+.welcome-calendar-heading .section-label {
+    margin: 0 0 1rem;
+    color: #927928;
+    font-size: 0.75rem;
+    letter-spacing: 0.17em;
+}
+
+.welcome-calendar-heading h2 {
+    margin: 0;
+    font-family: "Noto Serif JP", serif;
+    font-size: clamp(1.7rem, 3vw, 2.6rem);
+    line-height: 1.45;
+}
+
+.welcome-calendar-heading > p:last-child {
+    line-height: 1.8;
+}
+
+.welcome-calendar {
+    min-width: 0;
+    padding: clamp(1rem, 3vw, 1.75rem);
+    border: 1px solid #d5d0c4;
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.welcome-calendar-toolbar {
+    display: grid;
+    grid-template-columns: 2.75rem 1fr 2.75rem;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-calendar-toolbar h3 {
+    margin: 0;
+    font-family: "Noto Serif JP", serif;
+    font-size: 1.35rem;
+    text-align: center;
+}
+
+.welcome-calendar-toolbar button {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid #c9c4b5;
+    border-radius: 50%;
+    background: #fff;
+    color: #20251f;
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.welcome-calendar-toolbar button:hover {
+    background: #f4f2ed;
+}
+
+.welcome-calendar-weekdays,
+.welcome-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.welcome-calendar-weekdays span {
+    padding: 0.6rem 0.2rem;
+    color: #746532;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.welcome-calendar-day {
+    display: flex;
+    min-width: 0;
+    min-height: 6.4rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+    padding: 0.45rem;
+    border: 1px solid #e4e0d7;
+    background: #fff;
+    color: #222;
+    font: inherit;
+    text-align: left;
+}
+
+button.welcome-calendar-day {
+    cursor: pointer;
+}
+
+button.welcome-calendar-day:hover,
+button.welcome-calendar-day:focus-visible {
+    border-color: #927928;
+    background: #faf8f0;
+}
+
+.welcome-calendar-day.is-outside-month {
+    background: #f7f6f2;
+    color: #aaa69d;
+}
+
+.welcome-calendar-day.is-today .welcome-calendar-day-number {
+    color: #8a7023;
+    font-weight: 800;
+}
+
+.welcome-calendar-day-number {
+    align-self: flex-start;
+    font-size: 0.85rem;
+}
+
+.welcome-calendar-event {
+    display: -webkit-box;
+    overflow: hidden;
+    padding: 0.2rem 0.3rem;
+    border-radius: 0.2rem;
+    background: #20251f;
+    color: #fff;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.welcome-calendar-more {
+    color: #746532;
+    font-size: 0.65rem;
+}
+
+.welcome-calendar-status {
+    min-height: 1.5em;
+    margin: 0.85rem 0 0;
+    color: #5e5849;
+    font-size: 0.85rem;
+}
+
+.welcome-calendar-admin-open {
+    margin-top: 0.35rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid #20251f;
+    background: #20251f;
+    color: #fff;
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.welcome-calendar-admin-open:hover {
+    background: #343b32;
+}
+
 .welcome-text-link,
 .welcome-post-link {
     display: inline-flex;
@@ -868,8 +1060,23 @@ h3,
 
 @media (max-width: 760px) {
     .welcome-intro,
+    .welcome-calendar-section,
     .welcome-posts-section {
         grid-template-columns: 1fr;
+    }
+
+    .welcome-calendar-day {
+        min-height: 5rem;
+        padding: 0.3rem;
+    }
+
+    .welcome-calendar-event {
+        padding: 0.15rem 0.2rem;
+        font-size: 0.62rem;
+    }
+
+    .welcome-calendar-more {
+        font-size: 0.58rem;
     }
 
     .welcome-intro article + article {
@@ -881,6 +1088,34 @@ h3,
     .welcome-admin-post {
         align-items: flex-start;
         flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-newcomer-link {
+        right: max(0.75rem, env(safe-area-inset-right));
+        bottom: max(0.75rem, env(safe-area-inset-bottom));
+        gap: 0.45rem;
+        padding: 0.75rem 0.9rem;
+        font-size: 0.8rem;
+    }
+
+    .welcome-calendar {
+        padding: 0.65rem;
+    }
+
+    .welcome-calendar-day {
+        min-height: 4.25rem;
+        padding: 0.2rem;
+    }
+
+    .welcome-calendar-day-number {
+        font-size: 0.75rem;
+    }
+
+    .welcome-calendar-event {
+        font-size: 0.55rem;
+        line-height: 1.25;
     }
 }
 
