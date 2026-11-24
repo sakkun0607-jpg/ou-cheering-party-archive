@@ -2473,7 +2473,7 @@ if (welcomePosts) {
         const height = getYearStageHeight(blockCount);
         return {
             x: Number.isFinite(block.x) ? block.x : 6,
-            y: Number.isFinite(block.y) ? block.y : (20 + index * 420) / height * 100,
+            y: Math.max(12, Number.isFinite(block.y) ? block.y : (90 + index * 420) / height * 100),
             width: Number.isFinite(block.width) ? block.width : 88
         };
     }
@@ -2549,12 +2549,12 @@ if (welcomePosts) {
             label.textContent = labelText;
             const input = document.createElement("input");
             input.type = "number";
-            input.min = "0";
+            input.min = property === "y" ? "12" : "0";
             input.max = "100";
             input.step = "1";
             input.value = String(Math.round(initial));
             input.addEventListener("change", () => {
-                block[property] = Math.max(0, Math.min(100, Number(input.value) || 0));
+                block[property] = Math.max(property === "y" ? 12 : 0, Math.min(100, Number(input.value) || 0));
                 renderYearBlocksEditor();
                 const refreshedInspector = yearBlocksEditor.querySelector(".welcome-year-inspector");
                 renderYearBlockInspector(refreshedInspector);
@@ -2671,7 +2671,7 @@ if (welcomePosts) {
             const rect = canvas.getBoundingClientRect();
             const block = yearBlocks[pointerStart.index];
             block.x = Math.max(0, Math.min(100 - block.width, pointerStart.startX + (event.clientX - pointerStart.x) / rect.width * 100));
-            block.y = Math.max(0, Math.min(96, pointerStart.startY + (event.clientY - pointerStart.y) / rect.height * 100));
+            block.y = Math.max(12, Math.min(96, pointerStart.startY + (event.clientY - pointerStart.y) / rect.height * 100));
             const item = canvas.querySelector(`[data-year-block-index="${pointerStart.index}"]`);
             item.style.left = `${block.x}%`;
             item.style.top = `${block.y}%`;
@@ -2691,7 +2691,7 @@ if (welcomePosts) {
             const block = yearBlocks[Number(item.dataset.yearBlockIndex)];
             const position = getYearBlockPosition(block, Number(item.dataset.yearBlockIndex), yearBlocks.length);
             block.x = position.x + (event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0);
-            block.y = position.y + (event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0);
+            block.y = Math.max(12, Math.min(96, position.y + (event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0)));
             renderYearBlocksEditor();
             yearBlocksEditor.querySelector(`[data-year-block-index="${item.dataset.yearBlockIndex}"]`)?.focus();
         });
