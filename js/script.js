@@ -2103,32 +2103,32 @@ if (activityAdminLogout) {
 }
 
 
-const aboutSubmenuToggle =
+const partsSubmenuToggle =
     document.querySelector(".menu-submenu-toggle");
 
-if (aboutSubmenuToggle) {
+if (partsSubmenuToggle) {
 
-    const aboutSubmenu =
-        document.getElementById("aboutSubmenu");
+    const partsSubmenu =
+        document.getElementById("partsSubmenu");
 
-    if (aboutSubmenu) {
+    if (partsSubmenu) {
 
-        aboutSubmenuToggle.addEventListener(
+        partsSubmenuToggle.addEventListener(
             "click",
             function () {
 
                 const isExpanded =
-                    aboutSubmenuToggle.getAttribute("aria-expanded") === "true";
+                    partsSubmenuToggle.getAttribute("aria-expanded") === "true";
 
-                aboutSubmenuToggle.setAttribute(
+                partsSubmenuToggle.setAttribute(
                     "aria-expanded",
                     String(!isExpanded)
                 );
 
-                aboutSubmenu.hidden = isExpanded;
+                partsSubmenu.hidden = isExpanded;
 
                 const indicator =
-                    aboutSubmenuToggle.querySelector("span");
+                    partsSubmenuToggle.querySelector("span");
 
                 if (indicator) {
                     indicator.textContent = isExpanded ? "＋" : "－";
