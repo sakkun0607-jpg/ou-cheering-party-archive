@@ -3699,6 +3699,7 @@ footer {
 
 
 .cheer-instagram {
+    padding: 60px 12%;
     background: #111111;
 
     color: white;
@@ -3710,19 +3711,19 @@ footer {
 
     margin: 0 auto;
 
-    padding: 130px 0;
+    padding: 0;
 }
 
 
 .cheer-instagram-inner h2 {
-    margin: 0 0 60px;
+    margin: 0 0 22px;
 
     font-family: "Noto Serif JP", serif;
 
     font-size: clamp(
-        50px,
-        7vw,
-        85px
+        26px,
+        3.5vw,
+        38px
     );
 
     letter-spacing: 0.08em;
@@ -3736,9 +3737,9 @@ footer {
 
     align-items: center;
 
-    max-width: 800px;
+    max-width: 480px;
 
-    padding: 25px 0;
+    padding: 14px 0;
 
     border-top: 1px solid #666666;
 
@@ -3748,7 +3749,7 @@ footer {
 
     text-decoration: none;
 
-    font-size: 16px;
+    font-size: 15px;
 
     letter-spacing: 0.08em;
 
@@ -3766,7 +3767,7 @@ footer {
 
 
 .instagram-arrow {
-    font-size: 25px;
+    font-size: 19px;
 
     transition: transform 0.3s ease;
 }
@@ -4250,6 +4251,7 @@ footer {
 
 
 .band-instagram {
+    padding: 60px 12%;
     background: #111111;
 
     color: white;
@@ -4261,19 +4263,19 @@ footer {
 
     margin: 0 auto;
 
-    padding: 130px 0;
+    padding: 0;
 }
 
 
 .band-instagram-inner h2 {
-    margin: 0 0 60px;
+    margin: 0 0 22px;
 
     font-family: "Noto Serif JP", serif;
 
     font-size: clamp(
-        50px,
-        7vw,
-        85px
+        26px,
+        3.5vw,
+        38px
     );
 
     letter-spacing: 0.08em;
@@ -4287,9 +4289,9 @@ footer {
 
     align-items: center;
 
-    max-width: 800px;
+    max-width: 480px;
 
-    padding: 25px 0;
+    padding: 14px 0;
 
     border-top: 1px solid #666666;
 
@@ -4299,7 +4301,7 @@ footer {
 
     text-decoration: none;
 
-    font-size: 16px;
+    font-size: 15px;
 
     letter-spacing: 0.08em;
 
@@ -4317,7 +4319,7 @@ footer {
 
 
 .band-instagram-arrow {
-    font-size: 25px;
+    font-size: 19px;
 
     transition: transform 0.3s ease;
 }
@@ -4552,7 +4554,7 @@ footer {
 .site-credit {
     margin-top: 1.4rem;
     color: rgba(255, 255, 255, 0.72);
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     letter-spacing: 0.04em;
 }
 
