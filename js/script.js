@@ -3040,57 +3040,329 @@ if (welcomeYearContent) {
     const heading = document.getElementById("welcomeYearHeading");
     const intro = document.getElementById("welcomeYearIntro");
     const status = document.getElementById("welcomeYearStatus");
-    const renderYearDetail = async () => {
+    const adminEntry = document.getElementById("welcomeYearPageAdmin");
+    const loginToggle = document.getElementById("welcomeYearLoginToggle");
+    const loginForm = document.getElementById("welcomeYearLoginForm");
+    const loginStatus = document.getElementById("welcomeYearLoginStatus");
+    const pageEditor = document.getElementById("welcomeYearPageEditor");
+    const editStart = document.getElementById("welcomeYearEditStart");
+    const editControls = document.getElementById("welcomeYearEditControls");
+    const titleInput = document.getElementById("welcomeYearTitleInput");
+    const introInput = document.getElementById("welcomeYearIntroInput");
+    const inspector = document.getElementById("welcomeYearPageInspector");
+    const pageMessage = document.getElementById("welcomeYearPageMessage");
+    let currentYearPage = null;
+    let pageBlocks = [];
+    let selectedPageBlock = -1;
+    let pageEditMode = false;
+
+    const renderPageCanvas = () => {
+        welcomeYearContent.replaceChildren();
+        welcomeYearContent.style.height = `${getWelcomeYearStageHeight(pageBlocks.length)}px`;
+        pageBlocks.forEach((block, index) => {
+            const item = document.createElement("article");
+            item.className = `welcome-year-content-block welcome-year-content-${block.type === "image" ? "image" : "text"}`;
+            if (pageEditMode) {
+                item.classList.add("is-editable");
+                item.tabIndex = 0;
+                item.setAttribute("role", "button");
+                if (index === selectedPageBlock) item.classList.add("is-selected");
+            }
+            const x = block.x === null || block.x === undefined ? null : Number(block.x);
+            const y = block.y === null || block.y === undefined ? null : Number(block.y);
+            const width = block.width === null || block.width === undefined ? null : Number(block.width);
+            const position = getWelcomeYearBlockPosition({ x, y, width }, index, pageBlocks.length);
+            item.style.left = `${position.x}%`;
+            item.style.top = `${position.y}%`;
+            item.style.width = `${position.width}%`;
+            if (pageEditMode) {
+                const grip = document.createElement("span");
+                grip.className = "welcome-year-move-grip";
+                grip.textContent = "⠿ ここをドラッグして移動";
+                item.appendChild(grip);
+            }
+            if (block.heading) {
+                const subheading = document.createElement("h2");
+                subheading.textContent = block.heading;
+                item.appendChild(subheading);
+            }
+            if (block.type === "image") {
+                const figure = document.createElement("figure");
+                const image = document.createElement("img");
+                image.alt = block.image_alt || block.caption || "新歓活動の写真";
+                image.loading = "lazy";
+                if (block.preview_url || block.image_url) image.src = block.preview_url || block.image_url;
+                else {
+                    image.hidden = true;
+                    if (pageEditMode) {
+                        const placeholder = document.createElement("span");
+                        placeholder.className = "welcome-year-image-placeholder";
+                        placeholder.textContent = "設定欄から写真を選択してください";
+                        figure.appendChild(placeholder);
+                    }
+                }
+                figure.appendChild(image);
+                if (block.caption) {
+                    const caption = document.createElement("figcaption");
+                    caption.textContent = block.caption;
+                    figure.appendChild(caption);
+                }
+                item.appendChild(figure);
+            } else {
+                const text = document.createElement("p");
+                text.textContent = block.text || "";
+                item.appendChild(text);
+            }
+            welcomeYearContent.appendChild(item);
+        });
+
+        if (pageEditMode) {
+            let pointerStart = null;
+            welcomeYearContent.addEventListener("pointerdown", (event) => {
+                const item = event.target.closest(".welcome-year-content-block");
+                if (!item) return;
+                const index = Array.from(welcomeYearContent.children).indexOf(item);
+                selectedPageBlock = index;
+                welcomeYearContent.querySelectorAll(".welcome-year-content-block").forEach((node, nodeIndex) => node.classList.toggle("is-selected", nodeIndex === index));
+                renderPageInspector();
+                const position = getWelcomeYearBlockPosition(pageBlocks[index], index, pageBlocks.length);
+                pointerStart = { id: event.pointerId, index, x: event.clientX, y: event.clientY, startX: position.x, startY: position.y };
+                item.setPointerCapture(event.pointerId);
+                event.preventDefault();
+            });
+            welcomeYearContent.addEventListener("pointermove", (event) => {
+                if (!pointerStart || pointerStart.id !== event.pointerId) return;
+                const rect = welcomeYearContent.getBoundingClientRect();
+                const block = pageBlocks[pointerStart.index];
+                const position = getWelcomeYearBlockPosition(block, pointerStart.index, pageBlocks.length);
+                block.x = Math.max(0, Math.min(100 - position.width, pointerStart.startX + (event.clientX - pointerStart.x) / rect.width * 100));
+                block.y = Math.max(12, Math.min(96, pointerStart.startY + (event.clientY - pointerStart.y) / rect.height * 100));
+                const item = welcomeYearContent.children[pointerStart.index];
+                item.style.left = `${block.x}%`;
+                item.style.top = `${block.y}%`;
+            });
+            const endPointer = (event) => {
+                if (!pointerStart || pointerStart.id !== event.pointerId) return;
+                pointerStart = null;
+                renderPageInspector();
+            };
+            welcomeYearContent.addEventListener("pointerup", endPointer);
+            welcomeYearContent.addEventListener("pointercancel", endPointer);
+        }
+    };
+
+    const renderPageInspector = () => {
+        if (!inspector) return;
+        inspector.replaceChildren();
+        const block = pageBlocks[selectedPageBlock];
+        if (!block) {
+            inspector.innerHTML = '<p class="welcome-year-inspector-empty">ページ上の文章や写真を選ぶと、ここで編集できます。</p>';
+            return;
+        }
+        const addField = (labelText, tagName, property, maxLength, rows) => {
+            const label = document.createElement("label");
+            label.textContent = labelText;
+            const input = document.createElement(tagName);
+            input.maxLength = maxLength;
+            if (tagName === "textarea") input.rows = rows || 4;
+            input.value = block[property] || "";
+            input.addEventListener("input", () => {
+                block[property] = input.value;
+            });
+            input.addEventListener("change", () => {
+                renderPageCanvas();
+                renderPageInspector();
+            });
+            label.appendChild(input);
+            inspector.appendChild(label);
+        };
+        const title = document.createElement("h3");
+        title.textContent = block.type === "image" ? "写真を編集" : "文章を編集";
+        inspector.appendChild(title);
+        addField("見出し", "input", "heading", 120);
+        if (block.type === "image") {
+            const photoLabel = document.createElement("label");
+            photoLabel.textContent = "写真を選択";
+            const photoInput = document.createElement("input");
+            photoInput.type = "file";
+            photoInput.accept = "image/*";
+            photoInput.addEventListener("change", () => {
+                block.file = photoInput.files?.[0] || null;
+                block.preview_url = block.file ? URL.createObjectURL(block.file) : "";
+                renderPageCanvas();
+            });
+            photoLabel.appendChild(photoInput);
+            inspector.appendChild(photoLabel);
+            addField("写真の説明", "input", "image_alt", 240);
+            addField("写真のコメント", "textarea", "caption", 1000, 4);
+        } else {
+            addField("文章", "textarea", "text", 5000, 8);
+        }
+        const position = getWelcomeYearBlockPosition(block, selectedPageBlock, pageBlocks.length);
+        const controls = document.createElement("div");
+        controls.className = "welcome-year-position-fields";
+        [["左 (%)", "x", position.x], ["上 (%)", "y", position.y]].forEach(([labelText, property, value]) => {
+            const label = document.createElement("label");
+            label.textContent = labelText;
+            const input = document.createElement("input");
+            input.type = "number";
+            input.min = property === "y" ? "12" : "0";
+            input.max = "100";
+            input.value = String(Math.round(value));
+            input.addEventListener("change", () => {
+                block[property] = Math.max(property === "y" ? 12 : 0, Math.min(100, Number(input.value) || 0));
+                renderPageCanvas();
+                renderPageInspector();
+            });
+            label.appendChild(input);
+            controls.appendChild(label);
+        });
+        inspector.appendChild(controls);
+        const widthLabel = document.createElement("label");
+        widthLabel.textContent = "横幅";
+        const widthInput = document.createElement("input");
+        widthInput.type = "range";
+        widthInput.min = "20";
+        widthInput.max = "88";
+        widthInput.value = String(Math.round(position.width));
+        widthInput.addEventListener("input", () => {
+            block.width = Number(widthInput.value);
+            const item = welcomeYearContent.children[selectedPageBlock];
+            if (item) item.style.width = `${block.width}%`;
+        });
+        widthLabel.appendChild(widthInput);
+        inspector.appendChild(widthLabel);
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "welcome-year-remove-block";
+        remove.textContent = "この要素を削除";
+        remove.addEventListener("click", () => {
+            pageBlocks.splice(selectedPageBlock, 1);
+            selectedPageBlock = -1;
+            renderPageCanvas();
+            renderPageInspector();
+        });
+        inspector.appendChild(remove);
+    };
+
+    const startPageEdit = () => {
+        if (!currentYearPage) return;
+        pageEditMode = true;
+        selectedPageBlock = -1;
+        pageBlocks = (Array.isArray(currentYearPage.blocks) ? currentYearPage.blocks : []).map((block) => ({ ...block, file: null, preview_url: "" }));
+        titleInput.value = currentYearPage.title || "";
+        introInput.value = currentYearPage.intro || "";
+        editStart.hidden = true;
+        editControls.hidden = false;
+        renderPageCanvas();
+        renderPageInspector();
+    };
+
+    const loadYearDetail = async () => {
         if (!Number.isInteger(requestedYear) || !supabaseClient) {
             status.textContent = "年度ページを表示できません。新歓ページから年度を選び直してください。";
             return;
         }
         const { data, error } = await supabaseClient.from("welcome_year_pages")
-            .select("year, title, intro, blocks").eq("year", requestedYear).eq("is_published", true).maybeSingle();
+            .select("id, year, title, intro, blocks, is_published").eq("year", requestedYear).eq("is_published", true).maybeSingle();
         if (error || !data) {
             status.textContent = "この年度の紹介ページは公開されていないか、見つかりません。";
             return;
         }
+        currentYearPage = data;
         heading.textContent = data.title;
         document.title = `${data.year}年度 新歓紹介 | 大阪大学応援団`;
         intro.textContent = data.intro || "";
         status.hidden = true;
-        const blocks = Array.isArray(data.blocks) ? data.blocks : [];
-        welcomeYearContent.style.height = `${getWelcomeYearStageHeight(blocks.length)}px`;
-        blocks.forEach((block, index) => {
-            const section = document.createElement("article");
-            section.className = `welcome-year-content-block welcome-year-content-${block.type === "image" ? "image" : "text"}`;
-            const blockX = block.x === null || block.x === undefined ? null : Number(block.x);
-            const blockY = block.y === null || block.y === undefined ? null : Number(block.y);
-            const blockWidth = block.width === null || block.width === undefined ? null : Number(block.width);
-            const position = getWelcomeYearBlockPosition({ x: blockX, y: blockY, width: blockWidth }, index, blocks.length);
-            section.style.left = `${position.x}%`;
-            section.style.top = `${position.y}%`;
-            section.style.width = `${position.width}%`;
-            if (block.heading) {
-                const subheading = document.createElement("h2");
-                subheading.textContent = block.heading;
-                section.appendChild(subheading);
-            }
-            if (block.type === "image" && /^https:\/\//i.test(block.image_url || "")) {
-                const figure = document.createElement("figure");
-                const image = document.createElement("img");
-                image.src = block.image_url;
-                image.alt = block.image_alt || block.caption || "新歓活動の写真";
-                image.loading = "lazy";
-                const caption = document.createElement("figcaption");
-                caption.textContent = block.caption || "";
-                figure.append(image, caption);
-                section.appendChild(figure);
-            } else if (block.type === "text") {
-                const text = document.createElement("p");
-                text.textContent = block.text || "";
-                section.appendChild(text);
-            }
-            welcomeYearContent.appendChild(section);
-        });
+        pageBlocks = Array.isArray(data.blocks) ? data.blocks : [];
+        renderPageCanvas();
+        try {
+            if (await isSiteAdmin()) pageEditor.hidden = false;
+        } catch (_) {
+        }
     };
-    renderYearDetail();
+
+    loginToggle?.addEventListener("click", () => { loginForm.hidden = !loginForm.hidden; });
+    loginForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        loginStatus.textContent = "ログインしています……";
+        try {
+            await signInSiteAdmin(document.getElementById("welcomeYearEmail").value.trim(), document.getElementById("welcomeYearPassword").value);
+            loginForm.hidden = true;
+            pageEditor.hidden = false;
+            loginStatus.textContent = "管理者としてログインしました。";
+        } catch (error) {
+            loginStatus.textContent = error.message || "ログインできませんでした。";
+        }
+    });
+    editStart?.addEventListener("click", startPageEdit);
+    document.getElementById("welcomeYearAddText")?.addEventListener("click", () => {
+        pageBlocks.push({ type: "text", heading: "", text: "", x: 6, y: Math.max(12, (20 + pageBlocks.length * 420) / getWelcomeYearStageHeight(pageBlocks.length + 1) * 100), width: 88 });
+        selectedPageBlock = pageBlocks.length - 1;
+        renderPageCanvas();
+        renderPageInspector();
+    });
+    document.getElementById("welcomeYearAddImage")?.addEventListener("click", () => {
+        pageBlocks.push({ type: "image", heading: "", caption: "", image_alt: "", image_url: "", preview_url: "", x: 6, y: Math.max(12, (20 + pageBlocks.length * 420) / getWelcomeYearStageHeight(pageBlocks.length + 1) * 100), width: 88 });
+        selectedPageBlock = pageBlocks.length - 1;
+        renderPageCanvas();
+        renderPageInspector();
+    });
+    document.getElementById("welcomeYearPageCancel")?.addEventListener("click", () => {
+        pageEditMode = false;
+        editControls.hidden = true;
+        editStart.hidden = false;
+        pageBlocks = Array.isArray(currentYearPage.blocks) ? currentYearPage.blocks : [];
+        renderPageCanvas();
+    });
+    document.getElementById("welcomeYearPageSave")?.addEventListener("click", async () => {
+        const saveButton = document.getElementById("welcomeYearPageSave");
+        saveButton.disabled = true;
+        pageMessage.textContent = "変更を保存しています……";
+        try {
+            const blocks = [];
+            for (let index = 0; index < pageBlocks.length; index += 1) {
+                const block = pageBlocks[index];
+                const position = getWelcomeYearBlockPosition(block, index, pageBlocks.length);
+                const saved = { type: block.type, heading: (block.heading || "").trim(), x: position.x, y: Math.max(12, position.y), width: position.width };
+                if (block.type === "image") {
+                    let imageUrl = block.image_url || "";
+                    if (block.file) {
+                        if (!block.file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
+                        if (block.file.size > 10 * 1024 * 1024) throw new Error("画像は10MB以下にしてください。");
+                        const extension = (block.file.name.split(".").pop() || "jpg").replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
+                        const path = `welcome-year-${requestedYear}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+                        const { error } = await supabaseClient.storage.from("activity-images").upload(path, block.file, { upsert: false, contentType: block.file.type });
+                        if (error) throw error;
+                        imageUrl = supabaseClient.storage.from("activity-images").getPublicUrl(path).data.publicUrl;
+                    }
+                    if (!imageUrl) throw new Error("写真のブロックに写真を設定してください。");
+                    saved.image_url = imageUrl;
+                    saved.image_alt = (block.image_alt || "").trim();
+                    saved.caption = (block.caption || "").trim();
+                } else saved.text = (block.text || "").trim();
+                blocks.push(saved);
+            }
+            const { data, error } = await supabaseClient.from("welcome_year_pages").update({
+                title: titleInput.value.trim(), intro: introInput.value.trim(), blocks
+            }).eq("id", currentYearPage.id).select("id, year, title, intro, blocks, is_published").maybeSingle();
+            if (error) throw error;
+            if (!data) throw new Error("保存できませんでした。管理者権限を確認してください。");
+            currentYearPage = data;
+            heading.textContent = data.title;
+            intro.textContent = data.intro || "";
+            document.title = `${data.year}年度 新歓紹介 | 大阪大学応援団`;
+            pageBlocks = blocks;
+            pageEditMode = false;
+            editControls.hidden = true;
+            editStart.hidden = false;
+            renderPageCanvas();
+            pageMessage.textContent = "この年度ページを保存しました。";
+        } catch (error) {
+            pageMessage.textContent = `保存できませんでした: ${error.message || error}`;
+        } finally { saveButton.disabled = false; }
+    });
+    loadYearDetail();
 }
 
 function getWelcomeYearStageHeight(blockCount) {
@@ -3101,7 +3373,7 @@ function getWelcomeYearBlockPosition(block, index, blockCount) {
     const height = getWelcomeYearStageHeight(blockCount);
     return {
         x: Number.isFinite(block.x) ? block.x : 6,
-        y: Number.isFinite(block.y) ? block.y : (20 + index * 420) / height * 100,
+        y: Math.max(12, Number.isFinite(block.y) ? block.y : (90 + index * 420) / height * 100),
         width: Number.isFinite(block.width) ? block.width : 88
     };
 }

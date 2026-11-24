@@ -39,6 +39,36 @@
             <h1 id="welcomeYearHeading">年度別 新歓紹介</h1>
             <p id="welcomeYearIntro"></p>
         </header>
+        <section class="welcome-year-page-admin" id="welcomeYearPageAdmin" aria-label="年度紹介ページの編集">
+            <button type="button" id="welcomeYearLoginToggle">管理者ログイン</button>
+            <form id="welcomeYearLoginForm" hidden>
+                <label for="welcomeYearEmail">メールアドレス</label>
+                <input id="welcomeYearEmail" type="email" autocomplete="username" required>
+                <label for="welcomeYearPassword">パスワード</label>
+                <input id="welcomeYearPassword" type="password" autocomplete="current-password" required>
+                <button type="submit">ログイン</button>
+                <p id="welcomeYearLoginStatus" role="status"></p>
+            </form>
+            <div id="welcomeYearPageEditor" hidden>
+                <button type="button" id="welcomeYearEditStart">このページを編集</button>
+                <div id="welcomeYearEditControls" hidden>
+                    <label for="welcomeYearTitleInput">ページタイトル</label>
+                    <input id="welcomeYearTitleInput" maxlength="120">
+                    <label for="welcomeYearIntroInput">最初の紹介文</label>
+                    <textarea id="welcomeYearIntroInput" rows="3" maxlength="2000"></textarea>
+                    <div class="welcome-year-block-toolbar">
+                        <button type="button" id="welcomeYearAddText">文章を追加</button>
+                        <button type="button" id="welcomeYearAddImage">画像とコメントを追加</button>
+                    </div>
+                    <div id="welcomeYearPageInspector"></div>
+                    <div class="welcome-form-actions">
+                        <button type="button" id="welcomeYearPageSave">変更を保存</button>
+                        <button type="button" id="welcomeYearPageCancel">キャンセル</button>
+                    </div>
+                    <p id="welcomeYearPageMessage" role="status"></p>
+                </div>
+            </div>
+        </section>
         <p id="welcomeYearStatus" class="welcome-year-status" role="status" aria-live="polite">年度ページを読み込んでいます。</p>
         <section id="welcomeYearContent" class="welcome-year-content" aria-label="年度別の新歓紹介"></section>
         <a class="welcome-year-back" href="welcome.html">新入生向けページに戻る</a>
