@@ -955,17 +955,27 @@ button.welcome-calendar-day:focus-visible {
 }
 
 .welcome-year-content {
-    display: grid;
+    position: relative;
+    display: block;
     width: min(100% - 2rem, 58rem);
-    gap: 1.25rem;
+    min-height: 720px;
     margin: 0 auto 3rem;
+    overflow: hidden;
+    border: 1px solid #d5d0c4;
+    background-color: #fff;
+    background-image: linear-gradient(#f3f1eb 1px, transparent 1px), linear-gradient(90deg, #f3f1eb 1px, transparent 1px);
+    background-size: 32px 32px;
 }
 
 .welcome-year-content-block {
+    position: absolute;
+    box-sizing: border-box;
     min-width: 0;
     padding: clamp(1.25rem, 4vw, 2.5rem);
     border: 1px solid #e0ddd4;
     background: #fff;
+    box-shadow: 0 8px 24px rgba(31, 34, 29, 0.08);
+    overflow-wrap: anywhere;
 }
 
 .welcome-year-content-block h2 {
@@ -998,6 +1008,145 @@ button.welcome-calendar-day:focus-visible {
     color: #514f49;
     line-height: 1.8;
     white-space: pre-wrap;
+}
+
+.welcome-year-content-image figure {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.welcome-year-editor-hint {
+    margin: 0 0 0.75rem;
+    color: #5e5849;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.welcome-year-canvas {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 720px;
+    overflow: hidden;
+    border: 1px solid #c9c4b5;
+    background-color: #fbfaf7;
+    background-image: linear-gradient(#e8e5dc 1px, transparent 1px), linear-gradient(90deg, #e8e5dc 1px, transparent 1px);
+    background-size: 32px 32px;
+    touch-action: none;
+}
+
+.welcome-year-canvas-item {
+    position: absolute;
+    box-sizing: border-box;
+    min-width: 4rem;
+    padding: 1rem;
+    border: 1px solid #c9c4b5;
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(31, 34, 29, 0.12);
+    cursor: grab;
+    overflow-wrap: anywhere;
+    touch-action: none;
+    user-select: none;
+}
+
+.welcome-year-canvas-item:active,
+.welcome-year-canvas-item.is-dragging {
+    cursor: grabbing;
+}
+
+.welcome-year-canvas-item.is-selected {
+    z-index: 2;
+    outline: 2px solid #9a7b20;
+    outline-offset: 2px;
+}
+
+.welcome-year-move-grip {
+    display: block;
+    margin: -0.4rem -0.35rem 0.6rem;
+    color: #746532;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.welcome-year-canvas-heading {
+    margin: 0 0 0.5rem;
+    font-family: "Noto Serif JP", serif;
+    font-size: 1.15rem;
+}
+
+.welcome-year-canvas-text {
+    margin: 0;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
+.welcome-year-canvas-item figure {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.welcome-year-canvas-item img {
+    display: block;
+    width: 100%;
+    max-height: 17rem;
+    object-fit: contain;
+    background: #f3f1eb;
+}
+
+.welcome-year-canvas-item figcaption {
+    line-height: 1.65;
+    white-space: pre-wrap;
+}
+
+.welcome-year-image-placeholder,
+.welcome-year-canvas-empty {
+    display: block;
+    padding: 2.5rem 1rem;
+    color: #746532;
+    text-align: center;
+}
+
+.welcome-year-inspector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    border: 1px solid #d5d0c4;
+    background: #f8f7f3;
+}
+
+.welcome-year-inspector h3,
+.welcome-year-inspector-empty {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.welcome-year-inspector label {
+    min-width: 0;
+}
+
+.welcome-admin-panel .welcome-year-inspector input,
+.welcome-admin-panel .welcome-year-inspector textarea {
+    margin-bottom: 0;
+}
+
+.welcome-year-inspector input[type="range"] {
+    padding: 0.35rem 0;
+}
+
+.welcome-year-position-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.welcome-year-remove-block {
+    align-self: end;
+    border-color: #9b3930 !important;
+    background: #fff !important;
+    color: #9b3930 !important;
 }
 
 .welcome-year-back {
@@ -1275,6 +1424,24 @@ button.welcome-calendar-day:focus-visible {
     .welcome-admin-post {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .welcome-year-inspector {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .welcome-year-inspector h3,
+    .welcome-year-inspector-empty {
+        grid-column: auto;
+    }
+
+    .welcome-year-canvas-item {
+        padding: 0.7rem;
+    }
+
+    .welcome-year-canvas-heading {
+        font-size: 1rem;
     }
 }
 
