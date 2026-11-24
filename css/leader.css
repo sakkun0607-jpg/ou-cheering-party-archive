@@ -315,7 +315,7 @@
 
 
 .leader-instagram {
-    padding: 100px 12%;
+    padding: 60px 12%;
 
     background: #111111;
     color: white;
@@ -331,14 +331,14 @@
 }
 
 .leader-instagram h2 {
-    margin: 0 0 35px;
+    margin: 0 0 22px;
 
     font-family: "Noto Serif JP", serif;
 
     font-size: clamp(
-        40px,
-        6vw,
-        70px
+        26px,
+        3.5vw,
+        38px
     );
 
     letter-spacing: 0.08em;
@@ -350,16 +350,16 @@
     align-items: center;
     justify-content: space-between;
 
-    max-width: 500px;
+    max-width: 420px;
 
-    padding: 20px 0;
+    padding: 14px 0;
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 
     color: white;
     text-decoration: none;
 
-    font-size: 16px;
+    font-size: 15px;
     letter-spacing: 0.08em;
 
     transition: opacity 0.3s ease;
@@ -370,7 +370,7 @@
 }
 
 .leader-instagram .instagram-arrow {
-    font-size: 20px;
+    font-size: 19px;
 }
 
 
@@ -476,7 +476,7 @@
     
 
     .leader-instagram {
-        padding: 80px 7%;
+        padding: 42px 7%;
     }
 
 }

@@ -3857,13 +3857,16 @@ footer {
     }
 
 
-    .cheer-instagram-inner {
-        padding: 90px 8%;
+    .cheer-instagram {
+        padding: 42px 8%;
     }
 
+    .cheer-instagram-inner {
+        padding: 0;
+    }
 
     .cheer-instagram-inner h2 {
-        font-size: 50px;
+        font-size: clamp(24px, 5vw, 32px);
     }
 
 }
@@ -4409,13 +4412,16 @@ footer {
     }
 
 
-    .band-instagram-inner {
-        padding: 90px 8%;
+    .band-instagram {
+        padding: 42px 8%;
     }
 
+    .band-instagram-inner {
+        padding: 0;
+    }
 
     .band-instagram-inner h2 {
-        font-size: 50px;
+        font-size: clamp(24px, 5vw, 32px);
     }
 
 }
