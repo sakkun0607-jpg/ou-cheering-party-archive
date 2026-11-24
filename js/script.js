@@ -16,7 +16,8 @@ const SUPABASE_KEY =
 let supabaseClient = null;
 const needsSupabase = Boolean(
     document.getElementById("activityReports") ||
-    document.getElementById("welcomePosts")
+    document.getElementById("welcomePosts") ||
+    document.getElementById("welcomeYearContent")
 );
 
 if (window.supabase) {
@@ -2171,7 +2172,20 @@ if (welcomePosts) {
     const saveMessage = document.getElementById("welcomeSaveMessage");
     const adminPosts = document.getElementById("welcomeAdminPosts");
     const logoutButton = document.getElementById("welcomeAdminLogout");
+    const yearCards = document.getElementById("welcomeYearCards");
+    const yearForm = document.getElementById("welcomeYearForm");
+    const yearInput = document.getElementById("welcomeYearNumber");
+    const yearTitleInput = document.getElementById("welcomeYearTitle");
+    const yearIntroInput = document.getElementById("welcomeYearIntro");
+    const yearPublishedInput = document.getElementById("welcomeYearPublished");
+    const yearBlocksEditor = document.getElementById("welcomeYearBlocksEditor");
+    const yearAdminList = document.getElementById("welcomeYearAdminList");
+    const yearMessage = document.getElementById("welcomeYearMessage");
+    const yearSaveButton = document.getElementById("welcomeYearSaveButton");
+    const yearCancelButton = document.getElementById("welcomeYearCancel");
     let cachedPosts = [];
+    let cachedYearPages = [];
+    let yearBlocks = [];
     const displayedCalendarMonth = new Date();
     displayedCalendarMonth.setDate(1);
 
@@ -2434,6 +2448,265 @@ if (welcomePosts) {
         });
     }
 
+    function makeYearBlock(type = "text", value = {}) {
+        return {
+            type,
+            heading: value.heading || "",
+            text: value.text || "",
+            caption: value.caption || "",
+            image_url: value.image_url || "",
+            image_alt: value.image_alt || "",
+            file: null
+        };
+    }
+
+    function renderYearBlocksEditor() {
+        if (!yearBlocksEditor) return;
+        yearBlocksEditor.replaceChildren();
+        if (!yearBlocks.length) {
+            const empty = document.createElement("p");
+            empty.className = "welcome-form-hint";
+            empty.textContent = "文章や写真を追加すると、ここで並び順を編集できます。";
+            yearBlocksEditor.appendChild(empty);
+        }
+        yearBlocks.forEach((block, index) => {
+            const card = document.createElement("fieldset");
+            card.className = "welcome-year-edit-block";
+            const legend = document.createElement("legend");
+            legend.textContent = `${index + 1}. ${block.type === "image" ? "写真とコメント" : "文章"}`;
+            card.appendChild(legend);
+            const controls = document.createElement("div");
+            controls.className = "welcome-year-block-controls";
+            [["↑", -1, "上へ"], ["↓", 1, "下へ"]].forEach(([label, offset, accessible]) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.textContent = label;
+                button.setAttribute("aria-label", `${accessible}移動`);
+                button.disabled = index + offset < 0 || index + offset >= yearBlocks.length;
+                button.addEventListener("click", () => {
+                    [yearBlocks[index], yearBlocks[index + offset]] = [yearBlocks[index + offset], yearBlocks[index]];
+                    renderYearBlocksEditor();
+                });
+                controls.appendChild(button);
+            });
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.textContent = "このブロックを削除";
+            remove.addEventListener("click", () => {
+                yearBlocks.splice(index, 1);
+                renderYearBlocksEditor();
+            });
+            controls.appendChild(remove);
+            card.appendChild(controls);
+
+            const addField = (labelText, tagName, property, placeholder, maxLength) => {
+                const label = document.createElement("label");
+                label.textContent = labelText;
+                const input = document.createElement(tagName);
+                if (tagName === "textarea") input.rows = 5;
+                input.maxLength = maxLength;
+                input.placeholder = placeholder;
+                input.value = block[property] || "";
+                input.addEventListener("input", () => { block[property] = input.value; });
+                label.appendChild(input);
+                card.appendChild(label);
+            };
+            addField("見出し（任意）", "input", "heading", "", 120);
+            if (block.type === "text") {
+                addField("文章", "textarea", "text", "紹介文を入力", 5000);
+            } else {
+                const fileLabel = document.createElement("label");
+                fileLabel.textContent = "写真";
+                const fileInput = document.createElement("input");
+                fileInput.type = "file";
+                fileInput.accept = "image/*";
+                fileInput.addEventListener("change", () => {
+                    block.file = fileInput.files?.[0] || null;
+                    preview.src = block.file ? URL.createObjectURL(block.file) : block.image_url;
+                    preview.hidden = !preview.src;
+                });
+                fileLabel.appendChild(fileInput);
+                card.appendChild(fileLabel);
+                const preview = document.createElement("img");
+                preview.className = "welcome-year-editor-preview";
+                preview.alt = "写真のプレビュー";
+                preview.hidden = !block.image_url;
+                if (block.image_url) preview.src = block.image_url;
+                card.appendChild(preview);
+                addField("写真の説明（代替テキスト）", "input", "image_alt", "例：練習後に部員で撮影", 240);
+                addField("写真のコメント", "textarea", "caption", "写真についてのコメント", 1000);
+            }
+            yearBlocksEditor.appendChild(card);
+        });
+    }
+
+    function renderYearCards() {
+        if (!yearCards) return;
+        yearCards.replaceChildren();
+        if (!cachedYearPages.length) {
+            const empty = document.createElement("p");
+            empty.className = "welcome-empty";
+            empty.textContent = "年度ごとの紹介ページを準備しています。";
+            yearCards.appendChild(empty);
+            return;
+        }
+        cachedYearPages.forEach((page) => {
+            const card = document.createElement("a");
+            card.className = "welcome-year-card";
+            card.href = `welcome-year.html?year=${encodeURIComponent(page.year)}`;
+            const year = document.createElement("span");
+            year.className = "welcome-year-card-year";
+            year.textContent = `${page.year}年度`;
+            const title = document.createElement("h3");
+            title.textContent = page.title;
+            const intro = document.createElement("p");
+            intro.textContent = page.intro || "写真や文章で、この年度の新歓をご紹介します。";
+            const link = document.createElement("span");
+            link.className = "welcome-year-card-link";
+            link.textContent = "紹介を見る ↗";
+            card.append(year, title, intro, link);
+            yearCards.appendChild(card);
+        });
+    }
+
+    async function loadYearPages() {
+        if (!supabaseClient) return;
+        const { data, error } = await supabaseClient.from("welcome_year_pages")
+            .select("id, year, title, intro, blocks, is_published, updated_at")
+            .order("year", { ascending: false });
+        if (error) {
+            console.error("年度別新歓ページを取得できませんでした:", error);
+            if (yearCards) {
+                yearCards.innerHTML = '<p class="welcome-empty">年度紹介を読み込めませんでした。Supabaseの設定をご確認ください。</p>';
+            }
+            if (yearAdminList) yearAdminList.textContent = `読み込みエラー: ${error.message}`;
+            return;
+        }
+        cachedYearPages = data || [];
+        renderYearCards();
+        renderYearAdminList();
+    }
+
+    function resetYearForm() {
+        if (!yearForm) return;
+        yearForm.reset();
+        yearInput.value = String(new Date().getFullYear());
+        yearForm.dataset.editingId = "";
+        yearBlocks = [];
+        renderYearBlocksEditor();
+        yearSaveButton.textContent = "年度ページを保存";
+        yearCancelButton.hidden = true;
+        yearMessage.textContent = "";
+    }
+
+    resetYearForm();
+
+    function renderYearAdminList() {
+        if (!yearAdminList) return;
+        yearAdminList.replaceChildren();
+        if (!cachedYearPages.length) {
+            yearAdminList.innerHTML = "<p>年度ページはまだありません。</p>";
+            return;
+        }
+        cachedYearPages.forEach((page) => {
+            const row = document.createElement("div");
+            row.className = "welcome-admin-post";
+            const label = document.createElement("span");
+            label.textContent = `${page.year}年度　${page.title}${page.is_published ? "" : "（非公開）"}`;
+            const actions = document.createElement("div");
+            actions.className = "welcome-admin-actions";
+            const edit = document.createElement("button");
+            edit.type = "button";
+            edit.textContent = "編集";
+            edit.addEventListener("click", () => {
+                yearForm.dataset.editingId = page.id;
+                yearInput.value = page.year;
+                yearTitleInput.value = page.title || "";
+                yearIntroInput.value = page.intro || "";
+                yearPublishedInput.checked = page.is_published;
+                yearBlocks = (Array.isArray(page.blocks) ? page.blocks : []).map((block) => makeYearBlock(block.type, block));
+                renderYearBlocksEditor();
+                yearSaveButton.textContent = "変更を保存";
+                yearCancelButton.hidden = false;
+                yearMessage.textContent = `${page.year}年度のページを編集中です。`;
+                yearForm.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "welcome-delete-button";
+            remove.textContent = "削除";
+            remove.addEventListener("click", async () => {
+                if (!window.confirm(`${page.year}年度の紹介ページを削除しますか？`)) return;
+                const { error } = await supabaseClient.from("welcome_year_pages").delete().eq("id", page.id);
+                if (error) { yearMessage.textContent = `削除できませんでした: ${error.message}`; return; }
+                yearMessage.textContent = "年度ページを削除しました。";
+                await loadYearPages();
+            });
+            actions.append(edit, remove);
+            row.append(label, actions);
+            yearAdminList.appendChild(row);
+        });
+    }
+
+    async function uploadYearBlockImages(year) {
+        const savedBlocks = [];
+        for (const block of yearBlocks) {
+            const saved = { type: block.type, heading: block.heading.trim() };
+            if (block.type === "text") {
+                saved.text = block.text.trim();
+            } else {
+                let imageUrl = block.image_url;
+                if (block.file) {
+                    if (!block.file.type.startsWith("image/")) throw new Error("画像ファイルを選択してください。");
+                    if (block.file.size > 10 * 1024 * 1024) throw new Error("画像は10MB以下にしてください。");
+                    const extension = (block.file.name.split(".").pop() || "jpg").replace(/[^a-z0-9]/gi, "").toLowerCase() || "jpg";
+                    const path = `welcome-year-${year}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+                    const { error } = await supabaseClient.storage.from("activity-images").upload(path, block.file, { upsert: false, contentType: block.file.type });
+                    if (error) throw error;
+                    imageUrl = supabaseClient.storage.from("activity-images").getPublicUrl(path).data.publicUrl;
+                }
+                if (!imageUrl) throw new Error("写真ブロックには画像を追加してください。");
+                saved.image_url = imageUrl;
+                saved.image_alt = block.image_alt.trim();
+                saved.caption = block.caption.trim();
+            }
+            savedBlocks.push(saved);
+        }
+        return savedBlocks;
+    }
+
+    document.getElementById("welcomeYearAddText")?.addEventListener("click", () => {
+        yearBlocks.push(makeYearBlock("text")); renderYearBlocksEditor();
+    });
+    document.getElementById("welcomeYearAddImage")?.addEventListener("click", () => {
+        yearBlocks.push(makeYearBlock("image")); renderYearBlocksEditor();
+    });
+    yearCancelButton?.addEventListener("click", resetYearForm);
+    yearForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!supabaseClient) { yearMessage.textContent = "Supabaseに接続できません。"; return; }
+        const year = Number(yearInput.value);
+        if (!Number.isInteger(year) || year < 2000 || year > 2100) { yearMessage.textContent = "年度は2000〜2100の範囲で入力してください。"; return; }
+        yearSaveButton.disabled = true;
+        yearMessage.textContent = "画像とページ内容を保存しています……";
+        try {
+            const blocks = await uploadYearBlockImages(year);
+            const page = { year, title: yearTitleInput.value.trim(), intro: yearIntroInput.value.trim(), blocks, is_published: yearPublishedInput.checked };
+            const editingId = yearForm.dataset.editingId || "";
+            const result = editingId
+                ? await supabaseClient.from("welcome_year_pages").update(page).eq("id", editingId).select("id").maybeSingle()
+                : await supabaseClient.from("welcome_year_pages").upsert(page, { onConflict: "year" }).select("id").single();
+            if (result.error) throw result.error;
+            if (editingId && !result.data) throw new Error("更新権限がありません。管理者設定をご確認ください。");
+            resetYearForm();
+            yearMessage.textContent = `${year}年度のページを保存しました。`;
+            await loadYearPages();
+        } catch (error) {
+            console.error("年度ページの保存に失敗しました:", error);
+            yearMessage.textContent = `保存できませんでした: ${error.message || error}`;
+        } finally { yearSaveButton.disabled = false; }
+    });
+
     function resetWelcomeForm() {
         form.reset();
         form.dataset.editingId = "";
@@ -2456,6 +2729,7 @@ if (welcomePosts) {
                 passwordArea.hidden = true;
                 editorArea.hidden = false;
                 await loadWelcomePosts();
+                await loadYearPages();
             } else {
                 emailInput.focus();
             }
@@ -2485,6 +2759,7 @@ if (welcomePosts) {
             passwordInput.value = "";
             emailInput.value = "";
             renderWelcomeAdminPosts();
+            await loadYearPages();
         } catch (error) {
             passwordError.textContent = error.message || "ログインできませんでした。";
             passwordInput.value = "";
@@ -2575,4 +2850,55 @@ if (welcomePosts) {
         console.error("新歓企画の読み込みに失敗しました:", error);
         welcomePosts.innerHTML = '<p class="welcome-empty">企画情報を読み込めませんでした。</p>';
     });
+    if (yearCards) loadYearPages();
+}
+
+const welcomeYearContent = document.getElementById("welcomeYearContent");
+if (welcomeYearContent) {
+    const requestedYear = Number(new URLSearchParams(window.location.search).get("year"));
+    const heading = document.getElementById("welcomeYearHeading");
+    const intro = document.getElementById("welcomeYearIntro");
+    const status = document.getElementById("welcomeYearStatus");
+    const renderYearDetail = async () => {
+        if (!Number.isInteger(requestedYear) || !supabaseClient) {
+            status.textContent = "年度ページを表示できません。新歓ページから年度を選び直してください。";
+            return;
+        }
+        const { data, error } = await supabaseClient.from("welcome_year_pages")
+            .select("year, title, intro, blocks").eq("year", requestedYear).eq("is_published", true).maybeSingle();
+        if (error || !data) {
+            status.textContent = "この年度の紹介ページは公開されていないか、見つかりません。";
+            return;
+        }
+        heading.textContent = data.title;
+        document.title = `${data.year}年度 新歓紹介 | 大阪大学応援団`;
+        intro.textContent = data.intro || "";
+        status.hidden = true;
+        for (const block of Array.isArray(data.blocks) ? data.blocks : []) {
+            const section = document.createElement("article");
+            section.className = `welcome-year-content-block welcome-year-content-${block.type === "image" ? "image" : "text"}`;
+            if (block.heading) {
+                const subheading = document.createElement("h2");
+                subheading.textContent = block.heading;
+                section.appendChild(subheading);
+            }
+            if (block.type === "image" && /^https:\/\//i.test(block.image_url || "")) {
+                const figure = document.createElement("figure");
+                const image = document.createElement("img");
+                image.src = block.image_url;
+                image.alt = block.image_alt || block.caption || "新歓活動の写真";
+                image.loading = "lazy";
+                const caption = document.createElement("figcaption");
+                caption.textContent = block.caption || "";
+                figure.append(image, caption);
+                section.appendChild(figure);
+            } else if (block.type === "text") {
+                const text = document.createElement("p");
+                text.textContent = block.text || "";
+                section.appendChild(text);
+            }
+            welcomeYearContent.appendChild(section);
+        }
+    };
+    renderYearDetail();
 }

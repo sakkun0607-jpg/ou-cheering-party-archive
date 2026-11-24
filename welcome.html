@@ -61,6 +61,17 @@
             </div>
         </section>
 
+        <section class="welcome-years-section" aria-labelledby="welcomeYearsHeading">
+            <div class="welcome-section-heading">
+                <p class="section-label">YEARLY INTRODUCTIONS</p>
+                <h2 id="welcomeYearsHeading">年度ごとの新歓紹介</h2>
+                <p>各年度の活動や三つの部の日常を、写真とコメントで紹介します。</p>
+            </div>
+            <div id="welcomeYearCards" class="welcome-year-cards" aria-live="polite">
+                <p class="welcome-empty">年度ごとの紹介を読み込んでいます。</p>
+            </div>
+        </section>
+
         <section class="welcome-posts-section" id="welcomePostsSection" aria-labelledby="welcomePostsHeading">
             <div class="welcome-section-heading">
                 <p class="section-label">NEW STUDENT EVENTS</p>
@@ -116,6 +127,38 @@
                 <div class="welcome-admin-list-wrap">
                     <h3>投稿済みの企画</h3>
                     <div id="welcomeAdminPosts"><p>読み込み中……</p></div>
+                </div>
+
+                <div class="welcome-year-admin-wrap">
+                    <p class="section-label">YEARLY INTRODUCTIONS</p>
+                    <h2>年度ごとの新歓ページを編集</h2>
+                    <p class="welcome-form-hint">年度・タイトル・紹介文を設定し、文章や写真とコメントを好きな順番で追加できます。</p>
+                    <form id="welcomeYearForm">
+                        <label for="welcomeYearNumber">年度</label>
+                        <input id="welcomeYearNumber" type="number" min="2000" max="2100" required>
+                        <label for="welcomeYearTitle">ページタイトル</label>
+                        <input id="welcomeYearTitle" type="text" maxlength="120" placeholder="例：2027年度 新歓案内" required>
+                        <label for="welcomeYearIntro">最初の紹介文（任意）</label>
+                        <textarea id="welcomeYearIntro" rows="3" maxlength="2000"></textarea>
+                        <label class="welcome-year-publish-label">
+                            <input id="welcomeYearPublished" type="checkbox" checked>
+                            公開する
+                        </label>
+                        <div class="welcome-year-block-toolbar">
+                            <button type="button" id="welcomeYearAddText">文章を追加</button>
+                            <button type="button" id="welcomeYearAddImage">画像とコメントを追加</button>
+                        </div>
+                        <div id="welcomeYearBlocksEditor" class="welcome-year-blocks-editor"></div>
+                        <div class="welcome-form-actions">
+                            <button type="submit" id="welcomeYearSaveButton">年度ページを保存</button>
+                            <button type="button" id="welcomeYearCancel" hidden>編集をやめる</button>
+                        </div>
+                        <p id="welcomeYearMessage" class="welcome-admin-message" role="status"></p>
+                    </form>
+                    <div class="welcome-admin-list-wrap">
+                        <h3>登録済みの年度ページ</h3>
+                        <div id="welcomeYearAdminList"><p>読み込み中……</p></div>
+                    </div>
                 </div>
             </div>
         </div>

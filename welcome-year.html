@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年度別 新歓紹介 | 大阪大学応援団</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="welcome-page welcome-year-page">
+    <a href="index.html" class="archive-home" aria-label="ホームのトップへ戻る">大阪大学応援団</a>
+    <button class="menu-button" id="menuButton" aria-label="メニューを開く">☰</button>
+    <nav class="menu" id="menu" aria-label="サイトメニュー">
+        <a href="index.html">ホーム</a>
+        <div class="menu-group">
+            <button class="menu-submenu-toggle" type="button" aria-expanded="false" aria-controls="partsSubmenu">三部について <span aria-hidden="true">＋</span></button>
+            <div class="menu-submenu" id="partsSubmenu" hidden>
+                <a href="leader.html">リーダー部</a>
+                <a href="cheer.html">チアリーダー部</a>
+                <a href="band.html">ブラス部</a>
+            </div>
+        </div>
+        <a href="about.html">応援団について</a>
+        <a href="about.html#leader-message">団長挨拶</a>
+        <a href="member.html">団員紹介</a>
+        <a href="performance.html">演目</a>
+        <a href="history.html">応援団の歴史</a>
+        <a href="activity.html">活動記録</a>
+        <a href="welcome.html">新入生・入団希望の皆様へ</a>
+        <a href="links.html">関連リンク</a>
+        <a href="contact.html">お問い合わせ</a>
+    </nav>
+
+    <main>
+        <header class="welcome-year-hero">
+            <p class="section-label">YEARLY INTRODUCTIONS</p>
+            <h1 id="welcomeYearHeading">年度別 新歓紹介</h1>
+            <p id="welcomeYearIntro"></p>
+        </header>
+        <p id="welcomeYearStatus" class="welcome-year-status" role="status" aria-live="polite">年度ページを読み込んでいます。</p>
+        <section id="welcomeYearContent" class="welcome-year-content" aria-label="年度別の新歓紹介"></section>
+        <a class="welcome-year-back" href="welcome.html">新入生向けページに戻る</a>
+    </main>
+
+    <footer><p>THE UNIVERSITY OF OSAKA CHEERING PARTY</p></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
