@@ -2450,6 +2450,9 @@ if (welcomePosts) {
     }
 
     function makeYearBlock(type = "text", value = {}) {
+        const savedX = value.left_percent ?? value.x;
+        const savedY = value.top_percent ?? value.y;
+        const savedWidth = value.width_percent ?? value.width;
         return {
             type,
             heading: value.heading || "",
@@ -2457,9 +2460,9 @@ if (welcomePosts) {
             caption: value.caption || "",
             image_url: value.image_url || "",
             image_alt: value.image_alt || "",
-            x: Number.isFinite(Number(value.x)) ? Number(value.x) : null,
-            y: Number.isFinite(Number(value.y)) ? Number(value.y) : null,
-            width: Number.isFinite(Number(value.width)) ? Number(value.width) : 88,
+            x: savedX !== null && savedX !== undefined && Number.isFinite(Number(savedX)) ? Number(savedX) : null,
+            y: savedY !== null && savedY !== undefined && Number.isFinite(Number(savedY)) ? Number(savedY) : null,
+            width: savedWidth !== null && savedWidth !== undefined && Number.isFinite(Number(savedWidth)) ? Number(savedWidth) : 88,
             preview_url: value.preview_url || "",
             file: null
         };
@@ -2812,7 +2815,13 @@ if (welcomePosts) {
         for (const block of yearBlocks) {
             const blockIndex = savedBlocks.length;
             const position = getYearBlockPosition(block, blockIndex, yearBlocks.length);
-            const saved = { type: block.type, heading: block.heading.trim(), x: position.x, y: position.y, width: position.width };
+            const saved = {
+                type: block.type,
+                heading: block.heading.trim(),
+                left_percent: position.x,
+                top_percent: position.y,
+                width_percent: position.width
+            };
             if (block.type === "text") {
                 saved.text = block.text.trim();
             } else {
@@ -3068,9 +3077,12 @@ if (welcomeYearContent) {
                 item.setAttribute("role", "button");
                 if (index === selectedPageBlock) item.classList.add("is-selected");
             }
-            const x = block.x === null || block.x === undefined ? null : Number(block.x);
-            const y = block.y === null || block.y === undefined ? null : Number(block.y);
-            const width = block.width === null || block.width === undefined ? null : Number(block.width);
+            const savedX = block.left_percent ?? block.x;
+            const savedY = block.top_percent ?? block.y;
+            const savedWidth = block.width_percent ?? block.width;
+            const x = savedX === null || savedX === undefined ? null : Number(savedX);
+            const y = savedY === null || savedY === undefined ? null : Number(savedY);
+            const width = savedWidth === null || savedWidth === undefined ? null : Number(savedWidth);
             const position = getWelcomeYearBlockPosition({ x, y, width }, index, pageBlocks.length);
             item.style.left = `${position.x}%`;
             item.style.top = `${position.y}%`;
@@ -3324,7 +3336,13 @@ if (welcomeYearContent) {
             for (let index = 0; index < pageBlocks.length; index += 1) {
                 const block = pageBlocks[index];
                 const position = getWelcomeYearBlockPosition(block, index, pageBlocks.length);
-                const saved = { type: block.type, heading: (block.heading || "").trim(), x: position.x, y: Math.max(12, position.y), width: position.width };
+                const saved = {
+                    type: block.type,
+                    heading: (block.heading || "").trim(),
+                    left_percent: position.x,
+                    top_percent: Math.max(12, position.y),
+                    width_percent: position.width
+                };
                 if (block.type === "image") {
                     let imageUrl = block.image_url || "";
                     if (block.file) {
@@ -3371,9 +3389,12 @@ function getWelcomeYearStageHeight(blockCount) {
 
 function getWelcomeYearBlockPosition(block, index, blockCount) {
     const height = getWelcomeYearStageHeight(blockCount);
+    const savedX = block.left_percent ?? block.x;
+    const savedY = block.top_percent ?? block.y;
+    const savedWidth = block.width_percent ?? block.width;
     return {
-        x: Number.isFinite(block.x) ? block.x : 6,
-        y: Math.max(12, Number.isFinite(block.y) ? block.y : (90 + index * 420) / height * 100),
-        width: Number.isFinite(block.width) ? block.width : 88
+        x: savedX !== null && savedX !== undefined && Number.isFinite(Number(savedX)) ? Number(savedX) : 6,
+        y: Math.max(12, savedY !== null && savedY !== undefined && Number.isFinite(Number(savedY)) ? Number(savedY) : (90 + index * 420) / height * 100),
+        width: savedWidth !== null && savedWidth !== undefined && Number.isFinite(Number(savedWidth)) ? Number(savedWidth) : 88
     };
 }
