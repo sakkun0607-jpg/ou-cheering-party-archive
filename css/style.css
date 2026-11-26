@@ -1902,6 +1902,16 @@ button.welcome-calendar-day:focus-visible {
     margin: 0;
 }
 
+.leader-message-goal p + p {
+    margin-top: 0.85rem;
+}
+
+.leader-message-goal .leader-signature {
+    margin-top: 1.25rem;
+    text-align: right;
+    font-weight: 600;
+}
+
 
 
 
